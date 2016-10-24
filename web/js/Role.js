@@ -129,7 +129,7 @@ $(function () {
         ]
     });
     $('#btnModificar').on('click', function (){
-        $('frmEditRole').submit();
+        $('#frmEditRole').submit();
     });
 });
 

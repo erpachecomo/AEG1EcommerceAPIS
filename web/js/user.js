@@ -106,7 +106,8 @@ $(function () {
         ]
     });
     $('#btnModificar').on('click', function (){
-        $('frmEditUser').submit();
+
+        $('#frmEditUser').submit();
     });
     $.ajax({
                 url: 'https://restcountries.eu/rest/v1/all',
@@ -187,10 +188,7 @@ $(function () {
                 }
             });
     });
-    /*$('#cbCompany').selectpicker();
-    $('#cbCountries').selectpicker();
-    $('#cbGender').selectpicker();
-    $('#cbRole').selectpicker();*/
+    
     $.validator.addMethod("phone", function(value, element) {
                 var re = new RegExp(/^\+?[1-9]\d{1,14}$/);
                 return this.optional(element) || re.test(value);
@@ -307,13 +305,102 @@ $(function () {
         }
 
     });
+    $('#frmEditUser').validate({
+        rules: {
+            username2: {
+                minlength: 3,
+                maxlength: 20,
+                required: true
+            },
+            phone2: {
+                phone: true
+            },
+            cellphone2: {
+                phone: true
+            },
+            email2: {
+                email: true,
+                required: true
+            },
+            photo2: {
+                url: true
+            },
+            cbCompany2: {
+                required: true
+            },
+            cbRole2: {
+                required: true
+            },
+            cbGender2: {
+                required: true
+            },
+            cbCountries2: {
+                required: true
+            }
+          
+        },
+        messages: {
+            username2: {
+                minlength: "Introduzca al menos 3 caracteres",
+                maxlength: "Introduzca máximo 20 caracteres",
+                required: "Capture el nombre de usuario"
+                
+            },
+            phone2: {
+                phone: "Telefono inválido"
+            },
+            cellphone2: {
+                phone: "Telefono celular inválido"
+            },
+            email2: {
+                email: "Correo electrónico inválido",
+                required: "Capture el correo electrónico"
+            },
+            photo2: {
+                url: "URL de fotografía inválida"
+            },
+            cbCompany2: {
+                required: "Selecciona una compañía"
+            },
+            cbRole2: {
+                required: "Selecciona un rol"
+            },
+            cbGender2: {
+                required: "Selecciona un género"
+            },
+            cbCountries2: {
+                required: "Selecciona un país"
+            }
+            
+            
+        },
+        highlight: function (element) {
+            $(element).closest('.form-group').addClass('has-error');
+        },
+        unhighlight: function (element) {
+            $(element).closest('.form-group').removeClass('has-error');
+        },
+        errorElement: 'span',
+        errorClass: 'help-block',
+        errorPlacement: function (error, element) {
+            if (element.parent('.input-group').length) {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        },
+        submitHandler: function (form) {
+            updateUser();
+            return false;
+        }
+
+    });
     
     
     
 });
 
-function updateUser(userid,username,phone,cellphone,photo,email,companyid,roleid,
-gender,country,zipcode,region,state,city,neigborhood,street,streetnumber){
+function updateUser(){
     swal(
             {
                 title: "¿Estas seguro que deseas actualizar este registro?", text: "",
