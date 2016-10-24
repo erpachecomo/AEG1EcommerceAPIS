@@ -6,6 +6,7 @@
 package mx.edu.ittepic.ecommerce.servlets;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,10 +19,11 @@ import mx.edu.ittepic.ecommerce.ejbs.EJBecommerce;
  *
  * @author ernesto
  */
-@WebServlet(name = "NewUser", urlPatterns = {"/NewUser"})
-public class NewUser extends HttpServlet {
+@WebServlet(name = "UpdateUser", urlPatterns = {"/UpdateUser"})
+public class UpdateUser extends HttpServlet {
+
     @EJB
-    private EJBecommerce ejb;
+    EJBecommerce ejbM;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,6 +36,7 @@ public class NewUser extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -48,7 +51,7 @@ public class NewUser extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
     }
 
     /**
@@ -62,18 +65,18 @@ public class NewUser extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setHeader("Cache-Control", "no-store");
         response.setContentType("application/json;charset=UTF-8");
-        response.setHeader("cache-control", "no-store");
-        
+
         String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        String userid = request.getParameter("userid");
         String phone = request.getParameter("phone");
         String cellphone = request.getParameter("cellphone");
         String email = request.getParameter("email");
         String neigborhood = request.getParameter("neigborhood");
         String zipcode = request.getParameter("zipcode");
         String city = request.getParameter("city");
-        String country = request.getParameter("country");        
+        String country = request.getParameter("country");
         String state = request.getParameter("state");
         String region = request.getParameter("region");
         String street = request.getParameter("street");
@@ -82,8 +85,9 @@ public class NewUser extends HttpServlet {
         String companyid = request.getParameter("companyid");
         String roleid = request.getParameter("roleid");
         String gender = request.getParameter("gender");
-              
-        response.getWriter().print(ejb.newUser(username, password, phone, neigborhood, zipcode, city, country, state, region, street, email, streetnumber, photo, cellphone, companyid, roleid, gender));
+
+        PrintWriter out = response.getWriter();
+        out.print(ejbM.);
     }
 
     /**
