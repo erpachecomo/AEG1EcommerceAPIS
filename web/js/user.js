@@ -5,7 +5,7 @@ $(function () {
         language: {
             url: "//cdn.datatables.net/plug-ins/1.10.12/i18n/Spanish.json"
         },
-        ajax: {
+        ajax:{
             url: "GetUsers",
             dataSrc: function(json){
                 return $.parseJSON(json["msg"]);
