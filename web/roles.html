@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Administración de Roles</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
+        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="js/Roles.js"></script>
+        
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="col col-lg-12 col-sm-12 col-md-12 col-xs-12">
+            <form id="frmRole" method="get" >
+                <div class="form-group">
+                    <label class="control-label" for="rolename">Rol: </label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                        <input class="form-control" id="rolename" name="rolename" placeholder="Nombre del rol" type="text"/>
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-block btn-primary btn-lg"><i class="glyphicon glyphicon-floppy-disk"></i> Guardar</button>
+                </div>
+            </form>    
+        </div>
+    </body>
+</html>
