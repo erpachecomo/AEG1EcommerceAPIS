@@ -122,21 +122,21 @@ $(function () {
             }
         },
         submitHandler: function (form) {
-            newCompany($('#companyname').val(),$('#companyneighborhood').val(),$('#companyzipcode').val(),$('#companycity').val(),$('#companycountry').val(),$('#companystate').val(),$('#companyregion').val()
-                    ,$('#companystreet').val(),$('#companystreetnumber').val(),$('#companyphone').val(),$('#companyrfc').val(),$('#companylogo').val());
+            newCompany($('#companyname').val(), $('#companyneighborhood').val(), $('#companyzipcode').val(), $('#companycity').val(), $('#companycountry').val(), $('#companystate').val(), $('#companyregion').val()
+                    , $('#companystreet').val(), $('#companystreetnumber').val(), $('#companyphone').val(), $('#companyrfc').val(), $('#companylogo').val());
             return false;
         }
     });
     $('#tbCompany').DataTable({
         ajax: {
             url: 'GetCompanyAll',
-            type:'GET',
+            type: 'GET',
             dataSrc: function (json) {
                 console.log(json.msg);
                 return $.parseJSON(json.msg);
-            }, 
+            },
         },
-            responsive: true,
+        responsive: true,
         columns: [
             {data: 'companyid'
             },
@@ -165,13 +165,13 @@ $(function () {
             {data: 'logo'
             },
             {data: function (row) {
-                    
+
                     //console.log(row);
-                        str = " <div align='center'>"
-                        str += "<button id='btnEliminarCompany' class='btn btn-danger btn-xs' onClick='confirmar(" + row['companyid'] + ")'><i class='glyphicon glyphicon-trash'></i> Eliminar </button>";
-                        str += "&nbsp;<button id='btnEditarCompany' class = 'btn btn-success btn-xs' onClick='showCompany(" + row['companyid'] + ",\"" + row['companyname']+ "\",\"" + row['rfc']+ "\",\""+row['neighborhood']+"\","+row['zipcode']+",\""+row['city']+"\",\""+row['country']+"\",\""+row['state']+"\",\""+row['region']+"\",\""+row['street']+"\","+row['streetnumber']+","+row['phone']+",\""+row['logo']+"\")'><i class='glyphicon glyphicon-edit'></i> Modificar </button>";
-                        str += "</div";
-                        return str;
+                    str = " <div align='center'>"
+                    str += "<button id='btnEliminarCompany' class='btn btn-danger btn-xs' onClick='confirmar(" + row['companyid'] + ")'><i class='glyphicon glyphicon-trash'></i> Eliminar </button>";
+                    str += "&nbsp;<button id='btnEditarCompany' class = 'btn btn-success btn-xs' onClick='showCompany(" + row['companyid'] + ",\"" + row['companyname'] + "\",\"" + row['rfc'] + "\",\"" + row['neighborhood'] + "\"," + row['zipcode'] + ",\"" + row['city'] + "\",\"" + row['country'] + "\",\"" + row['state'] + "\",\"" + row['region'] + "\",\"" + row['street'] + "\"," + row['streetnumber'] + "," + row['phone'] + ",\"" + row['logo'] + "\")'><i class='glyphicon glyphicon-edit'></i> Modificar </button>";
+                    str += "</div";
+                    return str;
                 }
             }
         ]
@@ -196,7 +196,7 @@ $(function () {
             },
             companyzipcode2: {
                 maxlength: 10,
-                number:true,
+                number: true,
                 required: true
             },
             companystate2: {
@@ -213,12 +213,12 @@ $(function () {
             },
             companystreetnumber2: {
                 maxlength: 7,
-                number:true,
+                number: true,
                 required: true
             },
             companyphone2: {
                 maxlength: 15,
-                number:true,
+                number: true,
                 required: true
             },
             companyrfc2: {
@@ -249,7 +249,7 @@ $(function () {
             },
             companyzipcode2: {
                 maxlength: "Introduzca maximo 10 caracteres",
-                number:"Inserte solo numeros",
+                number: "Inserte solo numeros",
                 required: "Capture el codigo postal"
             },
             companystate2: {
@@ -258,7 +258,7 @@ $(function () {
             },
             companyregion2: {
                 maxlength: "Introduzca maximo 50 caracteres",
-                required:"Capture la region"
+                required: "Capture la region"
             },
             companystreet2: {
                 maxlength: "Introduzca maximo 50 caracteres",
@@ -266,12 +266,12 @@ $(function () {
             },
             companystreetnumber2: {
                 maxlength: "Introduzca maximo 7 caracteres",
-                number:"Inserte solo numeros",
+                number: "Inserte solo numeros",
                 required: "Capture el numero de la calle"
             },
             companyphone2: {
                 maxlength: "Introduzca maximo 15 caracteres",
-                number:"Inserte solo numeros",
+                number: "Inserte solo numeros",
                 required: "Capture el telefono"
             },
             companyrfc2: {
@@ -299,16 +299,16 @@ $(function () {
             }
         },
         submitHandler: function (form) {
-            console.log("ID"+$('#companyid').val());
-            updateCompany($('#companyid').val(),$('#companyname2').val(),$('#companycity2').val(),$('#companycountry2').val(),$('#companyneighborhood2').val(),$('#companyzipcodey2').val(),
-            $('#companystate2').val(),$('#companyregion2').val(),$('#companystreet2').val(),$('#companystreetnumber2').val(),$('#companyphone2').val(),$('#companyrfc2').val(),$('#companylogo2').val());
+            console.log("ID" + $('#companyid').val());
+            updateCompany($('#companyid').val(), $('#companyname2').val(), $('#companycity2').val(), $('#companycountry2').val(), $('#companyneighborhood2').val(), $('#companyzipcodey2').val(),
+                    $('#companystate2').val(), $('#companyregion2').val(), $('#companystreet2').val(), $('#companystreetnumber2').val(), $('#companyphone2').val(), $('#companyrfc2').val(), $('#companylogo2').val());
             return false;
         }
     });
     $('#btnModificarCompany').on('click', function () {
         $('#frmEditCompany').submit();
     });
-    
+
     $('#companycountry').selectpicker({});
 });
 function newCompany(nombre, neigh, zipcode, city, country, state, region, street, streetnumber, phone, rfc, logo) {
@@ -335,15 +335,15 @@ function newCompany(nombre, neigh, zipcode, city, country, state, region, street
             $('#tbCompany').dataTable().api().ajax.reload();
             $('#companycity').val('');
             $('#companylogo').val('');
-             $('#companynamey').val('');
-             $('#companyneighborhood').val('');
-             $('#companyphone').val('');
-             $('#companyregion').val('');
-             $('#companyrfc').val('');
-             $('#companystate').val('');
-             $('#companystreet').val('');
-             $('#companystreetnumber').val('');
-             $('#companyzipcode').val('');
+            $('#companynamey').val('');
+            $('#companyneighborhood').val('');
+            $('#companyphone').val('');
+            $('#companyregion').val('');
+            $('#companyrfc').val('');
+            $('#companystate').val('');
+            $('#companystreet').val('');
+            $('#companystreetnumber').val('');
+            $('#companyzipcode').val('');
             $.growl.notice({
                 message: json.msg
             });
@@ -352,9 +352,9 @@ function newCompany(nombre, neigh, zipcode, city, country, state, region, street
         }
     }).fail();
 }
-function showCompany(companyid, companyname,rfc,neigh, zipcode, city, country, state, region, street, streetnumber, phone, logo) {
+function showCompany(companyid, companyname, rfc, neigh, zipcode, city, country, state, region, street, streetnumber, phone, logo) {
     console.log("Entro showCompany");
-    console.log(companyid,companyname,rfc,neigh,zipcode, city, country, state, region, street, streetnumber, phone, logo);
+    console.log(companyid, companyname, rfc, neigh, zipcode, city, country, state, region, street, streetnumber, phone, logo);
     $('#companyid').val(companyid);
     $('#companyname2').val(companyname);
     $('#companyrfc2').val(rfc);
@@ -370,42 +370,61 @@ function showCompany(companyid, companyname,rfc,neigh, zipcode, city, country, s
     $('#companyzipcodey2').val(zipcode);
     $('#modalCompany').modal('show');
 }
-function updateCompany(companyid,companyname, city, country,neigh, zipcode, state, region, street, streetnumber, phone, rfc, logo) {
+function updateCompany(companyid, companyname, city, country, neigh, zipcode, state, region, street, streetnumber, phone, rfc, logo) {
     //Tres partes en las que se divide la peticion AJAX
-    console.log('Update '+logo);
-    $.ajax({
-        url: "UpdateCompany",
-        type: "post",
-        data: {
-            companyid: companyid,
-            companyname: companyname,
-            city:city,
-            country:country,
-            neigh:neigh,
-            zipcode:zipcode,
-            state:state,
-            region:region,
-            street:street,
-            streetnumber:streetnumber,
-            phone:phone,
-            rfc:rfc,
-            logo:logo
-        }
-    }).done(function (json) {
-        console.log(json.code);
-        if (json.code === 200) {
-            $('#tbCompany').dataTable().api().ajax.reload();
-            $('#companyname2').val('');
-            $('#companyid').val('');
-            $('#modalCompany').modal('hide');
-            $.growl.notice({
-                message: json.msg
-            });
+    swal(
+            {
+                title: "¿Estas seguro que deseas actualizar esta compañia?", text: "",
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55", confirmButtonText: "Aceptar!",
+                cancelButtonText: "Cancelar", closeOnConfirm: false,
+                closeOnCancel: false
+            }, function (isConfirm) {
+        if (isConfirm) {
 
+
+            $.ajax({
+                url: "UpdateCompany",
+                type: "post",
+                data: {
+                    companyid: companyid,
+                    companyname: companyname,
+                    city: city,
+                    country: country,
+                    neigh: neigh,
+                    zipcode: zipcode,
+                    state: state,
+                    region: region,
+                    street: street,
+                    streetnumber: streetnumber,
+                    phone: phone,
+                    rfc: rfc,
+                    logo: logo
+                }
+            }).done(function (json) {
+
+                if (json.code === 200) {
+                    swal("Actualizado!", "El registro se Actualizo correctamente", "success");
+                    $('#tbCompany').dataTable().api().ajax.reload();
+                    $('#companyname2').val('');
+                    $('#companyid').val('');
+                    $('#modalCompany').modal('hide');
+                    $.growl.notice({
+                        message: json.msg
+                    });
+
+                } else {
+                    $.growl.error({message: json.msg + "" + json.details});
+                }
+            }).fail(
+                    function () {
+                        $.growl.error({message: "Algo va mal no se encuentra el servidor"})
+                    }
+            );
         } else {
-            $.growl.error({message: 'No se pudo actualizar :('});
+            swal("Cancelado", "Accion Cancelada", "error");
         }
-    }).fail();
+    });
 }
 function confirmar(re) {
     bootbox.confirm({

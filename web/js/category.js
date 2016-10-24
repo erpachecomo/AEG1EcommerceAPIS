@@ -83,6 +83,7 @@
 
                 } ]
         } );
+        
         $( '#frmEditCategory' ).validate( {
             rules: {
                 categoryname2: {
