@@ -689,6 +689,37 @@ public class EJBecommerce {
         return gson.toJson(m);
 
     }
+    public String deleteUser(String userid) {
+        Message m = new Message();
+        Users user;
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        try {
+            Query q = entity.createNamedQuery("Users.findByUserid").
+                    setParameter("userid", Integer.parseInt(userid));
+            //se asigna el reultado a category
+            user = (Users) q.getSingleResult();
+            //esta funcion busca por id en la clase
+            //category = entity.find(category.class,Integer.parseInt(categoryid));
+            entity.remove(user);
+            m.setCode(200);
+            m.setMsg("El usuario se elimino correctamente");
+            m.setDetail("OK");
+        } catch (NumberFormatException e) {
+            m.setCode(406);
+            m.setMsg("Error de tipo de dato");
+            m.setDetail(e.toString());
+        } catch (IllegalArgumentException e) {
+            m.setCode(422);
+            m.setMsg("Su instancia no es una entidad ");
+            m.setDetail(e.toString());
+        } catch (TransactionRequiredException e) {
+            m.setCode(500);
+            m.setMsg("no hay ninguna transacción para invocar gestor de la entidad ");
+            m.setDetail(e.toString());
+        }
+        return gson.toJson(m);
+    }
 
     public String getUserByEmail(String email) {
         Message m = new Message();

@@ -77,7 +77,7 @@ $(function () {
             {
                 data: function(row){
                     str = "<div align = 'center'>";
-                    str += "<button id='btnBorrar' class='btn btn-danger btn-xs' onclick='deleteUsername("+row['userid']+")'><i class='glyphicon glyphicon-trash'></i></button>";
+                    str += "<button id='btnBorrar' class='btn btn-danger btn-xs' onclick='deleteUser("+row['userid']+")'><i class='glyphicon glyphicon-trash'></i></button>";
                     str += "&nbsp;<button id='btnEditar' class='btn btn-success btn-xs' onclick='showUser("+
                             row['userid']+","+
                             "\""+row['username']+"\","+
@@ -106,7 +106,6 @@ $(function () {
         ]
     });
     $('#btnModificar').on('click', function (){
-
         $('#frmEditUser').submit();
     });
     $.ajax({
@@ -508,6 +507,50 @@ function newUser(){
            $.growl.error({message: "El servidor no está disponible 😞"}); 
        }
      );
+}
+
+function deleteUser(userid){
+    swal(
+            {
+                title: "¿Estas seguro que deseas eliminar este registro?", text: "",
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55", confirmButtonText: "Aceptar!",
+                cancelButtonText: "Cancelar", closeOnConfirm: false,
+                closeOnCancel: false
+            }, function (isConfirm) {
+        if (isConfirm) {
+
+            var para = {
+                "userid": userid
+            };
+            ///Comienza a Borrar    
+            $.ajax({
+                url: "DeleteUser",
+                type: "post",
+                /*Manda todo el formulario
+                 * como mandar parametros por separado en data:
+                 */
+                data: para
+
+            }).done(
+                    function (data) {
+                        // alert("Se realizo correctamente"+data.code); 
+                        if (data.code === 200) {
+                            $.growl.notice({message: data.msg + " " + data.details});
+                            swal("Eliminado!", "El registro se elimino correctamente", "success");
+                            $('#tbUsers').dataTable().api().ajax.reload();
+                        } else
+                            $.growl.error({message: data.msg + "" + data.details});
+                    }
+            ).fail(
+                    function () {
+                        $.growl.error({message: "Algo va mal no se encuentra el servidor"})
+                    }
+            );
+        } else {
+            swal("Cancelado", "Accion Cancelada", "error");
+        }
+    });
 }
 
 
