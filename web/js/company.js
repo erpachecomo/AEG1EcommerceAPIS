@@ -168,7 +168,7 @@ $(function () {
 
                     //console.log(row);
                     str = " <div align='center'>"
-                    str += "<button id='btnEliminarCompany' class='btn btn-danger btn-xs' onClick='confirmar(" + row['companyid'] + ")'><i class='glyphicon glyphicon-trash'></i> Eliminar </button>";
+                    str += "<button id='btnEliminarCompany' class='btn btn-danger btn-xs' onClick='deleteCompany(" + row['companyid'] + ")'><i class='glyphicon glyphicon-trash'></i> Eliminar </button>";
                     str += "&nbsp;<button id='btnEditarCompany' class = 'btn btn-success btn-xs' onClick='showCompany(" + row['companyid'] + ",\"" + row['companyname'] + "\",\"" + row['rfc'] + "\",\"" + row['neighborhood'] + "\"," + row['zipcode'] + ",\"" + row['city'] + "\",\"" + row['country'] + "\",\"" + row['state'] + "\",\"" + row['region'] + "\",\"" + row['street'] + "\"," + row['streetnumber'] + "," + row['phone'] + ",\"" + row['logo'] + "\")'><i class='glyphicon glyphicon-edit'></i> Modificar </button>";
                     str += "</div";
                     return str;
@@ -426,42 +426,42 @@ function updateCompany(companyid, companyname, city, country, neigh, zipcode, st
         }
     });
 }
-function confirmar(re) {
-    bootbox.confirm({
-        title: "Borrar Compañia",
-        message: "¿Estas seguro de que deseas borrar esta compañia?",
-        buttons: {
-            cancel: {
-                label: '<i class="fa fa-times"></i> Cancel'
-            },
-            confirm: {
-                label: '<i class="fa fa-check"></i> Confirm'
-            }
-        },
-        callback: function (result) {
-            if (result === true) {
-                deleteCompany(re);
-            }
+
+function deleteCompany(companyid) {
+    swal(
+            {
+                title: "¿Estas seguro que deseas eliminar esta compañia?", text: "",
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55", confirmButtonText: "Aceptar!",
+                cancelButtonText: "Cancelar", closeOnConfirm: false,
+                closeOnCancel: false
+            }, function (isConfirm) {
+        if (isConfirm) {
+
+            $.ajax({
+                url: "DeleteCompany",
+                type: "post",
+                data: {
+                    companyid: companyid
+                }
+            }).done(function (json) {
+                if (json.code === 200) {
+                    swal("Eliminado!", "El registro se elimino correctamente", "success");
+                    $('#tbCompany').dataTable().api().ajax.reload();
+                    $.growl.notice({
+                        message: "Eliminado con éxito"
+                    });
+                } else {
+                    $.growl.error({message: "No se pudo eliminar."});
+                }
+            }).fail(
+                    function () {
+                        $.growl.error({message: "Algo va mal no se encuentra el servidor"})
+                    }
+            );
+        } else {
+            swal("Cancelado", "Accion Cancelada", "error");
         }
     });
-}
-function deleteCompany(companyid) {
-    //Tres partes en las que se divide la peticion AJAX
-    $.ajax({
-        url: "DeleteCompany",
-        type: "post",
-        data: {
-            companyid: companyid
-        }
-    }).done(function (json) {
-        if (json.code === 200) {
-            $('#tbCompany').dataTable().api().ajax.reload();
-            $.growl.notice({
-                message: "Se borro con exito! :)"
-            });
 
-        } else {
-            $.growl.error({message: "No se pudo borrar :("});
-        }
-    }).fail();
 }
