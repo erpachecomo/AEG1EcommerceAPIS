@@ -415,15 +415,16 @@ function cleanFields(){
     $('#password2').val('');   
     
 }
+function updateUser(userid,username,phone,cellphone,photo,email,companyid,roleid,gender,country,zipcode,region,state,city,neigborhood,street,streetnumber,companyname,rolename){}
 function showUser(userid,username,phone,cellphone,photo,email,companyid,roleid,gender,country,zipcode,region,state,city,neigborhood,street,streetnumber,companyname,rolename){
-    $('#userid').val(userid)
-    $('#roleid').val(roleid)
-    $('#companyid').val(companyid)
-    $('#username2').val(username)
-    $('#phone2').val(phone)
-    $('#cellphone2').val(cellphone)
-    $('#photo2').val(photo)
-    $('#email2').val(email)
+    $('#userid').val(userid);
+    $('#roleid').val(roleid);
+    $('#companyid').val(companyid);
+    $('#username2').val(username);
+    $('#phone2').val(phone);
+    $('#cellphone2').val(cellphone);
+    $('#photo2').val(photo);
+    $('#email2').val(email);
     
     var text = companyname;
        $('select[name=selValue]').val(1);
@@ -446,12 +447,12 @@ function showUser(userid,username,phone,cellphone,photo,email,companyid,roleid,g
     $('select[name=cbCountries2]').change();
     
     
-    $('#zip2').val(zipcode)
-    $('#region2').val(region)
-    $('#state2').val(state)
-    $('#city2').val(city)
-    $('#neigborhood2').val(neigborhood)
-    $('#street2').val(street)
-    $('#streetnumber2').val(streetnumber)
+    $('#zip2').val(zipcode);
+    $('#region2').val(region);
+    $('#state2').val(state);
+    $('#city2').val(city);
+    $('#neigborhood2').val(neigborhood);
+    $('#street2').val(street);
+    $('#streetnumber2').val(streetnumber);
     $('#modalUser').modal("show");
 }
