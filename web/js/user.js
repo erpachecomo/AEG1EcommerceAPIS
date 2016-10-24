@@ -312,7 +312,8 @@ $(function () {
     
 });
 
-function updateUser(roleid, rolename){
+function updateUser(userid,username,phone,cellphone,photo,email,companyid,roleid,
+gender,country,zipcode,region,state,city,neigborhood,street,streetnumber){
     swal(
             {
                 title: "¿Estas seguro que deseas actualizar este registro?", text: "",
@@ -324,13 +325,27 @@ function updateUser(roleid, rolename){
         if (isConfirm) {
 
             var para = {
+                "userid": $('#userid').val(),
+                "username": $('#username2').val(),
+                "phone":$('#phone2').val(),
+                "cellphone": $('#cellphone2').val(),
+                "photo": $('#photo2').val(),
+                "email": $('#email2').val(),
+                "companyid": $('#cbCompany2').val(),
                 "roleid": $('#roleid').val(),
-                "rolename": $('#rolename2').val()
-
+                "gender": $('#cbGender2').val(),
+                "country": $('#cbCountries2').val(),
+                "zipcode": $('#zip2').val(),
+                "region": $('#region2').val(),
+                "state": $('#state2').val(),
+                "city": $('#city2').val(),
+                "neigborhood": $('#neigborhood2').val(),
+                "street": $('#street2').val(),
+                "streetnumber": $('#streetnumber2').val()
             };
             ///Comienza a Borrar    
             $.ajax({
-                url: "UpdateRole",
+                url: "UpdateUser",
                 type: "post",
                 /*Manda todo el formulario
                  * como mandar parametros por separado en data:
@@ -343,8 +358,8 @@ function updateUser(roleid, rolename){
                         if (data.code === 200) {
                             $.growl.notice({message: data.msg + " " + data.details});
                             swal("Actualizado!", "El registro se Actualizo correctamente", "success");
-                            $('#tbRoles').dataTable().api().ajax.reload();
-                            $('#modalRole').modal("hide");
+                            $('#tbUsers').dataTable().api().ajax.reload();
+                            $('#modalUser').modal("hide");
                             //$('#rolename').val("");
                         } else
                             $.growl.error({message: data.msg + "" + data.details});
@@ -415,7 +430,7 @@ function cleanFields(){
     $('#password2').val('');   
     
 }
-function updateUser(userid,username,phone,cellphone,photo,email,companyid,roleid,gender,country,zipcode,region,state,city,neigborhood,street,streetnumber,companyname,rolename){}
+
 function showUser(userid,username,phone,cellphone,photo,email,companyid,roleid,gender,country,zipcode,region,state,city,neigborhood,street,streetnumber,companyname,rolename){
     $('#userid').val(userid);
     $('#roleid').val(roleid);
