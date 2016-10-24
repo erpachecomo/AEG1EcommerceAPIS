@@ -50,6 +50,26 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Users.findByPhoto", query = "SELECT u FROM Users u WHERE u.photo = :photo"),
     @NamedQuery(name = "Users.findByCellphone", query = "SELECT u FROM Users u WHERE u.cellphone = :cellphone"),
     @NamedQuery(name = "Users.findByGender", query = "SELECT u FROM Users u WHERE u.gender = :gender"),
+    @NamedQuery(name = "Users.updateUser", query = "UPDATE Users u SET "
+            + "u.gender = :gender,"
+            + "u.username = :username,"
+            + "u.phone = :phone,"
+            + "u.neigborhood = :neigborhood,"
+            + "u.zipcode = :zipcode,"
+            + "u.country = :country,"
+            + "u.city = :city,"
+            + "u.state = :state,"
+            + "u.region = :region,"
+            + "u.street = :street,"
+            + "u.email = :email,"
+            + "u.streetnumber = :streetnumber,"
+            + "u.photo = :photo,"
+            + "u.cellphone = :cellphone,"
+            + "u.companyid = :companyid,"
+            + "u.roleid = :roleid "
+            + "WHERE u.userid = :userid"
+            
+    ),
     @NamedQuery(name = "Users.login", query = "SELECT u FROM Users u WHERE u.username = :username AND u.password = :password")
 })
 

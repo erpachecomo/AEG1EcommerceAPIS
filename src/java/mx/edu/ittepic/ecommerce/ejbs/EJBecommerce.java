@@ -591,7 +591,7 @@ public class EJBecommerce {
             u.setStreetnumber(streetnumber);
             u.setUsername(username);
             u.setZipcode(zipcode);
-            
+
             entity.persist(u);
             entity.flush();
 
@@ -621,47 +621,115 @@ public class EJBecommerce {
         }
         return gson.toJson(m);
     }
-    public String getUserByEmail(String email){
+
+    public String updateUser(String username, String userid, String phone, String neigborhood, String zipcode,
+            String city, String country, String state, String region, String street, String email,
+            String streetnumber, String photo, String cellphone, String companyid, String roleid, String gender) {
+        Message m = new Message();
+        Company c;
+        Role r;
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        c = entity.find(Company.class, Integer.parseInt(companyid));
+
+        r = entity.find(Role.class, Integer.parseInt(roleid));
+
+        Query q = entity.createNamedQuery("Users.updateUser")
+                .setParameter("username", username)
+                .setParameter("phone", phone)
+                .setParameter("neigborhood", neigborhood)
+                .setParameter("zipcode", zipcode)
+                .setParameter("city", city)
+                .setParameter("country", country)
+                .setParameter("state", state)
+                .setParameter("region", region)
+                .setParameter("email", email)
+                .setParameter("street", street)
+                .setParameter("streetnumber", streetnumber)
+                .setParameter("photo", photo)
+                .setParameter("cellphone", cellphone)
+                .setParameter("gender", gender.charAt(0))
+                .setParameter("userid", Integer.parseInt(userid))
+                .setParameter("roleid", r)
+                .setParameter("companyid", c);
+        try {
+            if (q.executeUpdate() == 1) {
+                m.setCode(200);
+                m.setMsg("El usuario se actualizó correctamente");
+                m.setDetail("OK");
+            } else {
+                m.setCode(400);
+                m.setMsg("No se realizo la actualización");
+                m.setDetail("No existe el usuario especificado");
+            }
+
+            /*int roleidint=Integer.parseInt(roleid);
+        r.setRoleid(roleidint);    
+        r.setRolename(rolename);
+        //El refresh es para actualizar una entidad
+        entity.refresh(entity.merge(r)); // Si el id existe hace un update, sino guarda una nuevo. Persistencia manejada por le contenedor
+        entity.flush();*/
+        } catch (NumberFormatException e) {
+            m.setCode(406);
+            m.setMsg("Error de tipo de dato '" + userid + "'.");
+            m.setDetail(e.toString());
+        } catch (IllegalArgumentException e) {
+            m.setCode(422);
+            m.setMsg("Error de entidad, el usuario no es una entidad o ha sido removido.");
+            m.setDetail(e.toString());
+        } catch (TransactionRequiredException e) {
+            m.setCode(509);
+            m.setMsg("La transacción no pudo ser completada. Espera un momento y vuelve a intentar.");
+            m.setDetail(e.toString());
+        } catch (EntityNotFoundException e) {
+            m.setCode(404);
+            m.setMsg("El usuario introducido(" + userid + ") no existe, no se puede actualizar.");
+            m.setDetail(e.toString());
+        }
+        return gson.toJson(m);
+
+    }
+
+    public String getUserByEmail(String email) {
         Message m = new Message();
         Users user;
 
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        try{
+        try {
 
-        Query q = entity.createNamedQuery("Users.findByEmail")
-                .setParameter("email", email);
-        user = (Users) q.getSingleResult();
-        user.getCompanyid().setUsersList(null);
-        user.getRoleid().setUsersList(null);
-        user.setSaleList(null);
-        user.setPassword(null);
-        m.setCode(200);
-        m.setMsg(gson.toJson(user));
-        m.setDetail("OK");
-        }catch(NoResultException e){
+            Query q = entity.createNamedQuery("Users.findByEmail")
+                    .setParameter("email", email);
+            user = (Users) q.getSingleResult();
+            user.getCompanyid().setUsersList(null);
+            user.getRoleid().setUsersList(null);
+            user.setSaleList(null);
+            user.setPassword(null);
+            m.setCode(200);
+            m.setMsg(gson.toJson(user));
+            m.setDetail("OK");
+        } catch (NoResultException e) {
             m.setCode(404);
             m.setMsg("El usuario no se encontro.");
             m.setDetail(e.toString());
-        }catch(PessimisticLockException e){
+        } catch (PessimisticLockException e) {
             m.setCode(404);
             m.setMsg("Pessimistic locking fails and the transaction is rolled back.");
             m.setDetail(e.toString());
-        }
-        catch(LockTimeoutException e){
+        } catch (LockTimeoutException e) {
             m.setCode(404);
             m.setMsg("Pessimistic locking fails and only the statement is rolled back.");
             m.setDetail(e.toString());
-        }
-        catch(PersistenceException e){
+        } catch (PersistenceException e) {
             m.setCode(404);
             m.setMsg("The query execution exceeds the query timeout value set and the transaction is rolled back.");
             m.setDetail(e.toString());
         }
-        
+
         return gson.toJson(m);
     }
-    public String getUserByUsername(String username){
+
+    public String getUserByUsername(String username) {
         Message m = new Message();
         Users user;
 
@@ -682,6 +750,7 @@ public class EJBecommerce {
         //}
         return gson.toJson(m);
     }
+
     public String getUsers() {
 
         List<Users> users;
@@ -783,171 +852,141 @@ public class EJBecommerce {
         }
         return gson.toJson(msg);
     }
-    
-    
-    /*************************************************CATEGORY*******************************************/
-     public String newCategory( String name)
-    {
+
+    /**
+     * ***********************************************CATEGORY******************************************
+     */
+    public String newCategory(String name) {
         Message m = new Message();
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        try
-        {
+        try {
             Category c = new Category();
-            
+
             c.setCategoryname(name);
-            
-            entity.persist( c );
+
+            entity.persist(c);
             entity.flush();
 
-            m.setCode( 200 );
-            m.setMsg( "El registro se inserto correctamente" );
-            m.setDetail("Se insertó la categoría "+c.getCategoryname());
+            m.setCode(200);
+            m.setMsg("El registro se inserto correctamente");
+            m.setDetail("Se insertó la categoría " + c.getCategoryname());
 
+        } catch (NumberFormatException e) {
+            m.setCode(406);
+            m.setMsg("Error de tipo de dato");
+            m.setDetail(e.toString());
+        } catch (IllegalArgumentException e) {
+            m.setCode(422);
+            m.setMsg("Su instancia no es una entidad ");
+            m.setDetail(e.toString());
+        } catch (TransactionRequiredException e) {
+            m.setCode(500);
+            m.setMsg("no hay ninguna transacción para invocar gestor de la entidad ");
+            m.setDetail(e.toString());
         }
-        catch ( NumberFormatException e )
-        {
-            m.setCode( 406 );
-            m.setMsg( "Error de tipo de dato" );
-            m.setDetail( e.toString() );
-        }
-        catch ( IllegalArgumentException e )
-        {
-            m.setCode( 422 );
-            m.setMsg( "Su instancia no es una entidad " );
-            m.setDetail( e.toString() );
-        }
-        catch ( TransactionRequiredException e )
-        {
-            m.setCode( 500 );
-            m.setMsg( "no hay ninguna transacción para invocar gestor de la entidad " );
-            m.setDetail( e.toString() );
-        }
-        return gson.toJson( m );
+        return gson.toJson(m);
     }
-     
-     public String getCategory()
-    {
+
+    public String getCategory() {
         List<Category> listCategory;
         Message m = new Message();
 
         GsonBuilder builder = new GsonBuilder();
 
         Gson gson = builder.create();
-        Query q = entity.createNamedQuery( "Category.findAll" );
+        Query q = entity.createNamedQuery("Category.findAll");
         listCategory = q.getResultList();
         // 14-10 ms
         String category = "[";
-        for ( Category listCategory2 : listCategory )
-        {
+        for (Category listCategory2 : listCategory) {
             category = category + "{\"categoryid\":" + listCategory2.getCategoryid() + ",\"categoryname\":\"" + listCategory2.getCategoryname() + "\"},";
         }
-        category = category.substring( 0 , category.length() - 1 );
+        category = category.substring(0, category.length() - 1);
         category = category + "]";
         //  222 ms
-        m.setCode( 200 );
-        m.setMsg( category );
-        m.setDetail( "OK" );
-        return gson.toJson( m );
+        m.setCode(200);
+        m.setMsg(category);
+        m.setDetail("OK");
+        return gson.toJson(m);
         //return listRoles.toString();
     }
-     
-     public String DeleteCategory( String categoryid )
-    {
+
+    public String DeleteCategory(String categoryid) {
         Message m = new Message();
         Category category;
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        try
-        {
-            Query q = entity.createNamedQuery( "Category.findByCategoryid" ).
-                setParameter( "categoryid" , Integer.parseInt( categoryid ) );
+        try {
+            Query q = entity.createNamedQuery("Category.findByCategoryid").
+                    setParameter("categoryid", Integer.parseInt(categoryid));
             //se asigna el reultado a category
-            category = ( Category ) q.getSingleResult();
+            category = (Category) q.getSingleResult();
             category.setProductList(null);
             //esta funcion busca por id en la clase
             //category = entity.find(category.class,Integer.parseInt(categoryid));
-            entity.remove( category );
-            m.setCode( 200 );
-            m.setMsg( "el category se elimino correctamente" );
-            m.setDetail( "OK" );
+            entity.remove(category);
+            m.setCode(200);
+            m.setMsg("el category se elimino correctamente");
+            m.setDetail("OK");
+        } catch (NumberFormatException e) {
+            m.setCode(406);
+            m.setMsg("Error de tipo de dato");
+            m.setDetail(e.toString());
+        } catch (IllegalArgumentException e) {
+            m.setCode(422);
+            m.setMsg("Su instancia no es una entidad ");
+            m.setDetail(e.toString());
+        } catch (TransactionRequiredException e) {
+            m.setCode(500);
+            m.setMsg("no hay ninguna transacción para invocar gestor de la entidad ");
+            m.setDetail(e.toString());
         }
-        catch ( NumberFormatException e )
-        {
-            m.setCode( 406 );
-            m.setMsg( "Error de tipo de dato" );
-            m.setDetail( e.toString() );
-        }
-        catch ( IllegalArgumentException e )
-        {
-            m.setCode( 422 );
-            m.setMsg( "Su instancia no es una entidad " );
-            m.setDetail( e.toString() );
-        }
-        catch ( TransactionRequiredException e )
-        {
-            m.setCode( 500 );
-            m.setMsg( "no hay ninguna transacción para invocar gestor de la entidad " );
-            m.setDetail( e.toString() );
-        }
-        return gson.toJson( m );
+        return gson.toJson(m);
     }
-     
-     
-     public String updateCategory( String categoryid , String name )
-    {
+
+    public String updateCategory(String categoryid, String name) {
         Message m = new Message();
         Category r = new Category();
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        try
-        {
-            r = entity.find( Category.class , Integer.parseInt( categoryid ) );
-            if ( r == null )
-            {                m.setCode( 200 );
-                m.setMsg( "La categoria NO se actualizó correctamente" );
-                m.setDetail( "No se encontro el Registro" );
+        try {
+            r = entity.find(Category.class, Integer.parseInt(categoryid));
+            if (r == null) {
+                m.setCode(200);
+                m.setMsg("La categoria NO se actualizó correctamente");
+                m.setDetail("No se encontro el Registro");
+            } else {
+                r.setCategoryname(name);
+                entity.merge(r);
+                m.setCode(200);
+                m.setMsg("La categoria se actualizó correctamente");
+                m.setDetail("OK");
             }
-            else
-            {
-                r.setCategoryname( name );
-                entity.merge( r );
-                m.setCode( 200 );
-                m.setMsg( "La categoria se actualizó correctamente" );
-                m.setDetail( "OK" );
-            }
+        } catch (NumberFormatException e) {
+            m.setCode(406);
+            m.setMsg("Error de tipo de dato '" + categoryid + "'");
+            m.setDetail(e.toString());
+        } catch (IllegalArgumentException e) {
+            m.setCode(422);
+            m.setMsg("Su instancia no es una entidad '" + categoryid + "'");
+            m.setDetail(e.toString());
+        } catch (TransactionRequiredException e) {
+            m.setCode(500);
+            m.setMsg("no hay ninguna transacción para invocar gestor de la entidad '" + categoryid + "'");
+            m.setDetail(e.toString());
+        } catch (EntityNotFoundException e) {
+            m.setCode(406);
+            m.setMsg("No se encontro el categoryid para actualizar '" + categoryid + "'");
+            m.setDetail(e.toString());
         }
-        catch ( NumberFormatException e )
-        {
-            m.setCode( 406 );
-            m.setMsg( "Error de tipo de dato '" + categoryid + "'" );
-            m.setDetail( e.toString() );
-        }
-        catch ( IllegalArgumentException e )
-        {
-            m.setCode( 422 );
-            m.setMsg( "Su instancia no es una entidad '" + categoryid + "'" );
-            m.setDetail( e.toString() );
-        }
-        catch ( TransactionRequiredException e )
-        {
-            m.setCode( 500 );
-            m.setMsg( "no hay ninguna transacción para invocar gestor de la entidad '" + categoryid + "'" );
-            m.setDetail( e.toString() );
-        }
-        catch ( EntityNotFoundException e )
-        {
-            m.setCode( 406 );
-            m.setMsg( "No se encontro el categoryid para actualizar '" + categoryid + "'" );
-            m.setDetail( e.toString() );
-        }
-        return gson.toJson( m );
+        return gson.toJson(m);
     }
-     
-    
-    
-    /*****************************COMPAAANY********************************************/
-     public String newCompany(String CompanyName, String neighborhood, String zipcode, String city, String country, String state, String region, String street, String streetnumber, String phone, String rfc, String logo) {
+
+    /**
+     * ***************************COMPAAANY*******************************************
+     */
+    public String newCompany(String CompanyName, String neighborhood, String zipcode, String city, String country, String state, String region, String street, String streetnumber, String phone, String rfc, String logo) {
         Message m = new Message();
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
@@ -991,10 +1030,9 @@ public class EJBecommerce {
             return gson.toJson(m);
         }
     }
-     
-     
+
     public String getCompanyAll() {
-        
+
         Message m = new Message();
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
@@ -1004,9 +1042,9 @@ public class EJBecommerce {
             Query q = entity.createNamedQuery("Company.findAll");
             listCompany = q.getResultList();
             //Este codigo es para convertir list de objetos en json
-            if(!listCompany.isEmpty()){
+            if (!listCompany.isEmpty()) {
                 for (int i = 0; i < listCompany.size(); i++) {
-                    listCompany.get(i).setUsersList(null);   
+                    listCompany.get(i).setUsersList(null);
                 }
             }
             msg = gson.toJson(listCompany);
@@ -1028,8 +1066,8 @@ public class EJBecommerce {
         }
         return gson.toJson(m);
     }
-    
-    public String updateCompany(String companyid,String companyname,String city,String country,String neigh,String zipcode,String state,String region,String street,String streetnumber,String phone,String rfc,String logo) {
+
+    public String updateCompany(String companyid, String companyname, String city, String country, String neigh, String zipcode, String state, String region, String street, String streetnumber, String phone, String rfc, String logo) {
         Message m = new Message();
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
@@ -1116,5 +1154,4 @@ public class EJBecommerce {
         }
     }
 
-    
 }

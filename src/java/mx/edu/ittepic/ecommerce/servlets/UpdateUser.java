@@ -87,7 +87,7 @@ public class UpdateUser extends HttpServlet {
         String gender = request.getParameter("gender");
 
         PrintWriter out = response.getWriter();
-        out.print(ejbM.);
+        out.print(ejbM.updateUser(username, userid, phone, neigborhood, zipcode, city, country, state, region, street, email, streetnumber, photo, cellphone, companyid, roleid, gender));
     }
 
     /**
