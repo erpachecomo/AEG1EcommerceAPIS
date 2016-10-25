@@ -176,7 +176,7 @@ function deleteRole(roleid){
             };
             ///Comienza a Borrar    
             $.ajax({
-                url: "DeleteRol",
+                url: "DeleteRole",
                 type: "post",
                 /*Manda todo el formulario
                  * como mandar parametros por separado en data:
