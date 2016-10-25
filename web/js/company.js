@@ -1,4 +1,12 @@
 $(function () {
+    $.validator.addMethod("phone", function (value, element) {
+        var re = new RegExp(/^\+?[1-9]\d{1,14}$/);
+        return this.optional(element) || re.test(value);
+    }, "Telefono invalido: Por favor verificalo.");
+    $.validator.addMethod("RFC", function (value, element) {
+        var re = new RegExp(/^([A-Z,Ñ]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[A-Z|\d]{3})$/);
+        return this.optional(element) || re.test(value);
+    }, "RFC invalido: Por favor verificalo.");
     $('#frmCompany').validate({
         rules: {
             companyname: {
@@ -41,16 +49,17 @@ $(function () {
             },
             companyphone: {
                 maxlength: 15,
-                number: true,
+                phone: true,
                 required: true
             },
             companyrfc: {
                 maxlength: 13,
-                required: true
+                required: true,
+                RFC:true
             },
             companylogo: {
                 maxlength: 255,
-                required: true
+                url: true
             }
         },
         messages: {

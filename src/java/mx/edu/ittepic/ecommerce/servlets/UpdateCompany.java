@@ -18,7 +18,7 @@ import mx.edu.ittepic.ecommerce.utils.Message;
 
 /**
  *
- * @author Neto
+ * @author Lamas
  */
 @WebServlet(name = "UpdateCompany", urlPatterns = {"/UpdateCompany"})
 public class UpdateCompany extends HttpServlet {
