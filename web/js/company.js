@@ -359,7 +359,7 @@ function showCompany(companyid, companyname, rfc, neigh, zipcode, city, country,
     $('#companyname2').val(companyname);
     $('#companyrfc2').val(rfc);
     $('#companycity2').val(city);
-    //$('#companycountry2').val(country);
+    $('#companycountry2').val(country);
     $('#companylogo2').val(logo);
     $('#companyneighborhood2').val(neigh);
     $('#companyphone2').val(phone);

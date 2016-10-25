@@ -138,10 +138,7 @@
         } ).done( function ( json )
         {
             if ( json.code === 200 )
-                $.each( $.parseJSON( json.msg ) , function ( i , row )
-                {
-                    $( '<option></option>' , { text: row.categoryname } ).attr( 'value' , row.categoryid ).appendTo( '#cbCategory' );
-                } );
+                $('#tbCategory').dataTable().api().ajax.reload();
         } );
     } );
 
@@ -208,14 +205,15 @@
                   {
                       // alert("Se realizo correctamente"+data.code);
                       if ( data.code === 200 )
-                      {
-                          $.growl.notice( { message: data.msg + " " + data.details } );
+                      {              
+                         $.growl.notice( { message: data.msg + " " + data.details } );
                           swal( "Eliminado!" , "El registro se elimino correctamente" , "success" );
-                          $( '#tbCategory' ).dataTable().api().ajax.reload();
+                          $('#tbCategory').dataTable().api().ajax.reload();
                           $( '#categoryname' ).val( "" );
                       }
-                      else
+                      else{
                           $.growl.error( { message: data.msg + "" + data.details } );
+                      }
                   }
                 ).fail(
                   function ()
