@@ -1,7 +1,5 @@
 $(function () {
-    $('#purchprice').on('keyup', function(e){
-        alert($('#purchprice').val());
-    });
+    
     $('#tbProducts').DataTable({
         responsive: true,
         language: {
@@ -396,7 +394,7 @@ function newProduct() {
                     cleanFields();
                 } else {
                     $.growl.error({message: data.msg});
-                    alert($('#purchprice').val());
+                    //alert($('#purchprice').val());
                 }
             }
     ).fail(
