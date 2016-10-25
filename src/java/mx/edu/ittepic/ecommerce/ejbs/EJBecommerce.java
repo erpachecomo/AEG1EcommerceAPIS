@@ -929,12 +929,15 @@ public class EJBecommerce {
         Query q = entity.createNamedQuery("Category.findAll");
         listCategory = q.getResultList();
         // 14-10 ms
-        String category = "[";
+        String category = "";
+        if(listCategory.size()>0){
+        category = "[";
         for (Category listCategory2 : listCategory) {
             category = category + "{\"categoryid\":" + listCategory2.getCategoryid() + ",\"categoryname\":\"" + listCategory2.getCategoryname() + "\"},";
         }
         category = category.substring(0, category.length() - 1);
         category = category + "]";
+        }
         //  222 ms
         m.setCode(200);
         m.setMsg(category);
