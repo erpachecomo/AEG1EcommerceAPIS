@@ -17,7 +17,7 @@ import mx.edu.ittepic.ecommerce.ejbs.EJBecommerce;
 
 /**
  *
- * @author Neto
+ * @author Lamas
  */
 @WebServlet(name = "NewCompany", urlPatterns = {"/NewCompany"})
 public class NewCompany extends HttpServlet {
