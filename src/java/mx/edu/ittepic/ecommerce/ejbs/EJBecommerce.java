@@ -929,7 +929,7 @@ public class EJBecommerce {
         Query q = entity.createNamedQuery("Category.findAll");
         listCategory = q.getResultList();
         // 14-10 ms
-        String category = "";
+        String category = "[]";
         if(listCategory.size()>0){
         category = "[";
         for (Category listCategory2 : listCategory) {

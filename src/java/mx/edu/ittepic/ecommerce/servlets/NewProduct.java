@@ -35,9 +35,6 @@ public class NewProduct extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        response.setHeader("Cache-Control", "no-store");
-        PrintWriter out = response.getWriter();
         
         
     }
@@ -54,7 +51,6 @@ public class NewProduct extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
     }
 
     /**
@@ -80,6 +76,18 @@ public class NewProduct extends HttpServlet {
         String currency = request.getParameter("currency");
         String reorderpoint = request.getParameter("reorderpoint");
         String categoryid = request.getParameter("categoryid");
+        
+        System.out.println("productname - "+productname);
+        System.out.println("c - "+code);
+        System.out.println("b - "+brand);
+        System.out.println("p - "+purchprice);
+        System.out.println("st - "+stock);
+        System.out.println("spmay - "+salepricemay);
+        System.out.println("min - "+salepricemin);
+        System.out.println("currency - "+currency);
+        System.out.println("reord - "+reorderpoint);
+        System.out.println("category - "+categoryid);
+        
         
         PrintWriter p = response.getWriter();
         
