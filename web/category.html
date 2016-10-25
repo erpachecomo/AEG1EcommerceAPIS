@@ -1,4 +1,5 @@
 <script type="text/javascript" src="js/category.js"></script>
+
 <div id="modalCategory" class="modal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -6,6 +7,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h3>Modificar Categoría</h3>
             </div>
+            
             <div class="modal-body">
                 <form id="frmEditCategory">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center">
@@ -27,6 +29,7 @@
             </div>
         </div>
     </div>
+</div>
 <div class="row">
     <div class="col col-lg-12 col-md-12 col-sm-12 col-xs-12" >
         <form id="frmCategory" method="POST">
@@ -38,15 +41,7 @@
                     </span>
                     <input class="form-control" id="categoryname" name="categoryname" placeholder="Nombre de categoría">
                 </div>
-                <div class="form-group">
-                    <label class="control-label" for="cbCategory">Categorías</label>
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="glyphicon glyphicon-king"></i>
-                        </span>
-                        <select name="cbCategory" id="cbCategory" class="form-control"></select>
-                    </div>
-                </div>
+                
                 <!--Ejemplo Quitar despues-->
                 <div align="right">
                     <button type="submit" class="btn btn-primary btn-ls">
@@ -70,4 +65,5 @@
             </thead>
         </table>
     </div>
+</div>
 </div>
