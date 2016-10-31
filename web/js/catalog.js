@@ -16,7 +16,7 @@ $(function () {
             $('<a></a>').attr("id", "a-item" + i).appendTo('#div-item' + i);
             $('<ul></ul>').attr("class", "cd-slider-wrapper").attr("id", "ul-item" + i).appendTo('#a-item' + i);
             $('<li></li>').attr("class", "selected").attr("id", "li-img-item" + i).appendTo('#ul-item' + i);
-            $('<img>').attr("src", 'https://lh3.googleusercontent.com/--BIUhXPpNIk/AAAAAAAAAAI/AAAAAAAAAJY/M6azp0UYZXc/photo.jpg').attr("alt", msg.productname).appendTo('#li-img-item' + i);
+            $('<img>').attr("src", msg.image.split("/")[1]+"/"+msg.image.split("/")[2]).attr("alt", msg.productname).appendTo('#li-img-item' + i);
 
             $('<div></div>').attr("id", "div-control" + i).attr("class", "cd-customization row").appendTo('#div-item' + i);
             $('<div></div>').attr("id", "div-form" + i).attr("class", "col-lg-7 col-md-7 col-sm-7").appendTo('#div-control' + i);
@@ -45,7 +45,7 @@ $(function () {
                     .attr("stroke-linecap", "square")
                     .attr("stroke-miterlimit", "10")
                     ;
-            $('<button></button>', {text: 'Customize'}).attr("class", "cd-customization-trigger").appendTo('#div-item' + i);
+            //$('<button></button>', {text: 'Customize'}).attr("class", "cd-customization-trigger").appendTo('#div-item' + i);
             $('<div></div>').attr("class", "cd-item-info").attr("id", "div-cd-item-info" + i).appendTo('#li-item' + i);
             $('<b></b>').attr("id", "b" + i).appendTo('#div-cd-item-info' + i);
             $('<a></a>').appendTo('#b' + i);

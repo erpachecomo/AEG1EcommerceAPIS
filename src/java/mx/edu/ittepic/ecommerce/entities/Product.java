@@ -39,8 +39,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Product.findByCurrency", query = "SELECT p FROM Product p WHERE p.currency = :currency"),
     @NamedQuery(name = "Product.findByPurchprice", query = "SELECT p FROM Product p WHERE p.purchprice = :purchprice"),
     @NamedQuery(name = "Product.findBySalepricemay", query = "SELECT p FROM Product p WHERE p.salepricemay = :salepricemay"),
-    @NamedQuery(name = "Product.findReorderProducts", query = "SELECT p FROM Product p WHERE p.reorderpoint >= p.stock"),
-    @NamedQuery(name = "Product.findBySalepricemin", query = "SELECT p FROM Product p WHERE p.salepricemin = :salepricemin")})
+    @NamedQuery(name = "Product.findBySalepricemin", query = "SELECT p FROM Product p WHERE p.salepricemin = :salepricemin"),
+    @NamedQuery(name = "Product.findByImage", query = "SELECT p FROM Product p WHERE p.image = :image")})
 public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -78,6 +78,9 @@ public class Product implements Serializable {
     private Double salepricemay;
     @Column(name = "salepricemin")
     private Double salepricemin;
+    @Size(max = 256)
+    @Column(name = "image")
+    private String image;
     @JoinColumn(name = "categoryid", referencedColumnName = "categoryid")
     @ManyToOne(optional = false)
     private Category categoryid;
@@ -174,6 +177,14 @@ public class Product implements Serializable {
 
     public void setSalepricemin(Double salepricemin) {
         this.salepricemin = salepricemin;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Category getCategoryid() {
