@@ -15,12 +15,12 @@ jQuery(document).ready(function(){
 	function initCustomization(items) {
 		items.each(function(){
 			var actual = $(this),
-			//	selectOptions = actual.find('[data-type="select"]'),
+				selectOptions = actual.find('[data-type="select"]'),
 				addToCartBtn = actual.find('.add-to-cart'),
 				touchSettings = actual.next('.cd-customization-trigger');
 
 			//detect click on ul.size/ul.color list elements 
-			/*selectOptions.on('click', function(event) { 
+			selectOptions.on('click', function(event) { 
 				var selected = $(this);
 				//open/close options list
 				selected.toggleClass('is-open');
@@ -36,7 +36,7 @@ jQuery(document).ready(function(){
 					// if color has been changed, update the visible product image 
 					selected.hasClass('color') && updateSlider(selected, index-1);
 				}
-			});*/
+			});
 
 			//detect click on the add-to-cart button
 			addToCartBtn.on('click', function() {	
