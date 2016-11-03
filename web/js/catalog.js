@@ -21,11 +21,11 @@ $(function () {
             $('<div></div>').attr("id", "div-input-group" + i).attr("class", "input-group").appendTo('#div-form' + i);
             //$('<span></span>').attr("id", "span-icon" + i).attr("class", "input-group-addon").appendTo('#div-input-group' + i);
             //$('<i></i>').attr("class", "glyphicon glyphicon-plus").appendTo('#span-icon' + i);
-            $('<input>').attr("class", "form-control").attr("min", '1').attr("max", "'" + msg.stock + "'").attr("type", "number").attr("id", "quantity" + i).attr("name", "quantity" + i).attr("placeholder", "Cantidad").appendTo('#div-input-group' + i);
+            $('<input>').attr("class", "form-control").attr("min", '1').attr("max", msg.stock).attr("type", "number").attr("id", "quantity" + i).attr("name", "quantity" + i).attr("placeholder", "Cantidad").appendTo('#div-input-group' + i);
             //console.log("addToCart("+msg.productid+",$('#quantity" + i+"').val())");
             
             $('<button></button>')
-                    .attr("onclick", "addToCart('"+msg.productname+"','"+msg.code+"','"+msg.productid+"','"+msg.salepricemin+"','"+msg.image+"','" +i + "',"+"'button-cart" + i+"')")
+                    .attr("onclick", "addToCart('"+msg.productname+"','"+msg.code+"','"+msg.productid+"','"+msg.salepricemin+"','"+msg.image+"','" + i + "',"+"'button-cart" + i+"')")
                     .attr("class", "add-to-cart").attr("id", "button-cart" + i).appendTo('#div-control' + i);
             $('<em></em>', {text: "Add to cart"}).appendTo('#button-cart' + i);
             $('<svg></svg>').appendTo('#button-cart' + i)

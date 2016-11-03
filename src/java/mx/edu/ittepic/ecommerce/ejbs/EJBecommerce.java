@@ -7,6 +7,7 @@ package mx.edu.ittepic.ecommerce.ejbs;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityExistsException;
@@ -26,6 +27,8 @@ import mx.edu.ittepic.ecommerce.entities.Category;
 import mx.edu.ittepic.ecommerce.entities.Company;
 import mx.edu.ittepic.ecommerce.entities.Product;
 import mx.edu.ittepic.ecommerce.entities.Role;
+import mx.edu.ittepic.ecommerce.entities.Sale;
+import mx.edu.ittepic.ecommerce.entities.Salesline;
 import mx.edu.ittepic.ecommerce.entities.Users;
 import mx.edu.ittepic.ecommerce.utils.Message;
 
@@ -1187,5 +1190,182 @@ public class EJBecommerce {
             return gson.toJson(m);
         }
     }
+    
+    public String deleteSale(String saleid) {
 
+        Message m = new Message();
+        Sale s;
+
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        try {
+
+            Query q = entity.createNamedQuery("Sale.findBySaleid").setParameter("saleid", Integer.parseInt(saleid));
+            s = (Sale) q.getSingleResult();
+
+            entity.remove(s);
+            entity.flush();
+
+            m.setCode(200);
+            m.setMsg("El sale fue eliminado correctamente");
+            m.setDetail("OK");
+        } catch (NoResultException e) {
+            m.setCode(404);
+            m.setMsg("El sale no fue encontrado.");
+            m.setDetail(e.getMessage());
+        } catch (NonUniqueResultException e) {
+            m.setCode(400);
+            m.setMsg("El sale no es unico, comunicate con el administrador.");
+            m.setDetail(e.getMessage());
+        } catch (IllegalStateException e) {
+            m.setCode(422);
+            m.setMsg("Error de entidad, el sale no es una entidad o ha sido removido.");
+            m.setDetail(e.toString());
+        } catch (QueryTimeoutException e) {
+            m.setCode(422);
+            m.setMsg("La operación tardo demasiado, por favor vuelve a intentarlo.");
+            m.setDetail(e.toString());
+        } catch (TransactionRequiredException e) {
+            m.setCode(509);
+            m.setMsg("La operación tardo demasiado, por favor vuelve a intentarlo.");
+            m.setDetail(e.toString());
+        }
+        return gson.toJson(m);
+    }
+
+    public String newSale(String userid, String amount) {
+        Message m = new Message();
+        Sale s = new Sale();
+        Users u;
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        Query q;
+        try {
+            q = entity.createNamedQuery("Users.findByUserid").setParameter("userid", Integer.parseInt(userid));
+            u =(Users) q.getSingleResult();
+            s.setAmount(Double.parseDouble(amount));
+            s.setDate(new Date());
+            s.setUserid(u);
+            entity.persist(s); // Si el id existe hace un update, sino guarda una nuevo. Persistencia manejada por le contenedor
+            entity.flush();
+
+            m.setCode(200);
+            m.setMsg("El sale se creó correctamente");
+            m.setDetail(s.getSaleid()+ "");
+        } catch (NumberFormatException e) {
+            m.setCode(406);
+            m.setMsg("Error de tipo de dato.");
+            m.setDetail(e.toString());
+        } catch (EntityExistsException e) {
+            m.setCode(400);
+            m.setMsg("El rol que intentas ingresar ya existe.");
+            m.setDetail(e.toString());
+        } catch (IllegalArgumentException e) {
+            m.setCode(422);
+            m.setMsg("Error de entidad, el sale no es una entidad o ha sido removido.");
+            m.setDetail(e.toString());
+        } catch (TransactionRequiredException e) {
+            m.setCode(509);
+            m.setMsg("La transacción no pudo ser completada. Espera un momento y vuelve a intentar.");
+            m.setDetail(e.toString());
+        } catch (EntityNotFoundException e) {
+            m.setCode(404);
+            m.setMsg("El sale introducido no existe, no se puede actualizar.");
+            m.setDetail(e.toString());
+        }
+        return gson.toJson(m);
+    }
+
+    public String deleteSalesLine(String saleslineid) {
+
+        Message m = new Message();
+        Salesline s;
+
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        try {
+
+            Query q = entity.createNamedQuery("Salesline.findBySaleslineid").setParameter("saleslineid", Integer.parseInt(saleslineid));
+            s = (Salesline) q.getSingleResult();
+
+            entity.remove(s);
+            entity.flush();
+
+            m.setCode(200);
+            m.setMsg("El saleline fue eliminado correctamente");
+            m.setDetail("OK");
+        } catch (NoResultException e) {
+            m.setCode(404);
+            m.setMsg("El sale no fue encontrado.");
+            m.setDetail(e.getMessage());
+        } catch (NonUniqueResultException e) {
+            m.setCode(400);
+            m.setMsg("El sale no es unico, comunicate con el administrador.");
+            m.setDetail(e.getMessage());
+        } catch (IllegalStateException e) {
+            m.setCode(422);
+            m.setMsg("Error de entidad, el sale no es una entidad o ha sido removido.");
+            m.setDetail(e.toString());
+        } catch (QueryTimeoutException e) {
+            m.setCode(422);
+            m.setMsg("La operación tardo demasiado, por favor vuelve a intentarlo.");
+            m.setDetail(e.toString());
+        } catch (TransactionRequiredException e) {
+            m.setCode(509);
+            m.setMsg("La operación tardo demasiado, por favor vuelve a intentarlo.");
+            m.setDetail(e.toString());
+        }
+        return gson.toJson(m);
+    }
+
+    public String newSale(String quantity, String saleid, String productid, String purchprice, String saleprice) {
+        Message m = new Message();
+        Salesline s = new Salesline();
+        Sale sale;
+        Product p;
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        Query q;
+        try {
+            q = entity.createNamedQuery("Sale.findBySaleid").setParameter("saleid", Integer.parseInt(saleid));
+            sale =(Sale) q.getSingleResult();
+            q = entity.createNamedQuery("Product.findByProductid").setParameter("productid", Integer.parseInt(productid));
+            p =(Product) q.getSingleResult();
+            s.setProductid(p);
+            s.setPurchprice(Double.parseDouble(purchprice));
+            s.setQuantity(Integer.parseInt(quantity));
+            s.setSaleid(sale);
+            s.setSaleprice(Double.parseDouble(saleprice));
+            
+            entity.persist(s); // Si el id existe hace un update, sino guarda una nuevo. Persistencia manejada por le contenedor
+            entity.flush();
+
+            m.setCode(200);
+            m.setMsg("El sale se creó correctamente");
+            m.setDetail(s.getSaleid()+ "");
+        } catch (NumberFormatException e) {
+            m.setCode(406);
+            m.setMsg("Error de tipo de dato.");
+            m.setDetail(e.toString());
+        } catch (EntityExistsException e) {
+            m.setCode(400);
+            m.setMsg("El rol que intentas ingresar ya existe.");
+            m.setDetail(e.toString());
+        } catch (IllegalArgumentException e) {
+            m.setCode(422);
+            m.setMsg("Error de entidad, el sale no es una entidad o ha sido removido.");
+            m.setDetail(e.toString());
+        } catch (TransactionRequiredException e) {
+            m.setCode(509);
+            m.setMsg("La transacción no pudo ser completada. Espera un momento y vuelve a intentar.");
+            m.setDetail(e.toString());
+        } catch (EntityNotFoundException e) {
+            m.setCode(404);
+            m.setMsg("El sale introducido no existe, no se puede actualizar.");
+            m.setDetail(e.toString());
+        }
+        return gson.toJson(m);
+    }
+
+    
 }

@@ -16,7 +16,6 @@ import javax.ejb.Stateful;
 import mx.edu.ittepic.ecommerce.entities.ProductDetail;
 
 /**
- *
  * @author ernesto
  */
 @Stateful
