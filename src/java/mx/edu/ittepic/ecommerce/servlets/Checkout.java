@@ -19,10 +19,11 @@ import mx.edu.ittepic.ecommerce.ejbs.EJBecommerce;
  *
  * @author ernesto
  */
-@WebServlet(name = "NewSale", urlPatterns = {"/NewSale"})
-public class NewSale extends HttpServlet {
-@EJB
-private EJBecommerce ejb;
+@WebServlet(name = "Checkout", urlPatterns = {"/Checkout"})
+public class Checkout extends HttpServlet {
+    @EJB
+    private EJBecommerce ejb;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -34,7 +35,7 @@ private EJBecommerce ejb;
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -49,7 +50,7 @@ private EJBecommerce ejb;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
     }
 
     /**
@@ -63,14 +64,12 @@ private EJBecommerce ejb;
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
         response.setHeader("Cache-Control", "no-store");
-        
-        String userid = request.getParameter("userid");
-        String amount = request.getParameter("amount");
-        
+        response.setContentType("application/json;charset=UTF-8");
         PrintWriter pw = response.getWriter();
-        pw.print(ejb.newSale(userid, amount));
+        
+        //String
+
     }
 
     /**

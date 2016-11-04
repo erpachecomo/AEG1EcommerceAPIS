@@ -1233,7 +1233,7 @@ public class EJBecommerce {
         return gson.toJson(m);
     }
 
-    public String newSale(String userid, String amount) {
+    public String newSale(String userid, String amount){
         Message m = new Message();
         Sale s = new Sale();
         Users u;
@@ -1275,6 +1275,43 @@ public class EJBecommerce {
         }
         return gson.toJson(m);
     }
+    
+    public String updateSale(String saleid, String userid, String amount){
+        Message m = new Message();
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        Users u;
+        try {
+            Sale s = new Sale();
+            s = entity.find(Sale.class, Integer.parseInt(saleid));
+            if (s == null) {
+                m.setCode(404);
+                m.setMsg("No se encontro");
+                m.setDetail("");
+            } else {
+                u = entity.find(Users.class, Integer.parseInt(userid));
+                s.setAmount(Double.parseDouble(amount));
+                s.setUserid(u);
+                entity.merge(s);
+                m.setCode(200);
+                m.setMsg("Se modifico correctamente");
+                m.setDetail("OK");
+            }
+            return gson.toJson(m);
+        } catch (IllegalArgumentException e) {
+            m.setCode(404);
+            m.setMsg(e.getMessage());
+            m.setDetail("Error");
+            return gson.toJson(m);
+        } catch (TransactionRequiredException e) {
+            m.setCode(404);
+            m.setMsg(e.getMessage());
+            m.setDetail("Error");
+            return gson.toJson(m);
+        }
+
+    }
+
 
     public String deleteSalesLine(String saleslineid) {
 
@@ -1318,7 +1355,7 @@ public class EJBecommerce {
         return gson.toJson(m);
     }
 
-    public String newSale(String quantity, String saleid, String productid, String purchprice, String saleprice) {
+    public String newSalesLine(String quantity, String saleid, String productid, String purchprice, String saleprice) {
         Message m = new Message();
         Salesline s = new Salesline();
         Sale sale;
@@ -1367,5 +1404,45 @@ public class EJBecommerce {
         return gson.toJson(m);
     }
 
-    
+    public String updateSalesLine(String saleslineid,String quantity, String saleid, String productid, String purchprice, String saleprice) {
+        Message m = new Message();
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        Sale s;
+        Product p;
+        try {
+            Salesline sale = new Salesline();
+            sale = entity.find(Salesline.class, Integer.parseInt(saleslineid));
+            if (sale == null) {
+                m.setCode(404);
+                m.setMsg("No se encontro");
+                m.setDetail("");
+            } else {
+                s = entity.find(Sale.class, Integer.parseInt(saleid));
+                p = entity.find(Product.class, Integer.parseInt(productid));
+                sale.setPurchprice(Double.parseDouble(purchprice));
+                sale.setProductid(p);
+                sale.setQuantity(Integer.parseInt(quantity));
+                sale.setSaleid(s);
+                sale.setSaleprice(Double.parseDouble(saleprice));
+                entity.merge(sale);
+                m.setCode(200);
+                m.setMsg("Se modifico correctamente");
+                m.setDetail("OK");
+            }
+            return gson.toJson(m);
+        } catch (IllegalArgumentException e) {
+            m.setCode(404);
+            m.setMsg(e.getMessage());
+            m.setDetail("Error");
+            return gson.toJson(m);
+        } catch (TransactionRequiredException e) {
+            m.setCode(404);
+            m.setMsg(e.getMessage());
+            m.setDetail("Error");
+            return gson.toJson(m);
+        }
+
+    }
+
 }

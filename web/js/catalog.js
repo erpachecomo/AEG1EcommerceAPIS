@@ -3,8 +3,7 @@ $(function () {
         url: 'GetProducts',
         type: 'GET',
         async: false
-                //,
-                // dataType: 'json'
+
     }).done(function (json1) {
         //console.log("json:"+json1);
         $.each($.parseJSON(json1.msg), function (i, msg) {
@@ -23,9 +22,9 @@ $(function () {
             //$('<i></i>').attr("class", "glyphicon glyphicon-plus").appendTo('#span-icon' + i);
             $('<input>').attr("class", "form-control").attr("min", '1').attr("max", msg.stock).attr("type", "number").attr("id", "quantity" + i).attr("name", "quantity" + i).attr("placeholder", "Cantidad").appendTo('#div-input-group' + i);
             //console.log("addToCart("+msg.productid+",$('#quantity" + i+"').val())");
-            
+
             $('<button></button>')
-                    .attr("onclick", "addToCart('"+msg.productname+"','"+msg.code+"','"+msg.productid+"','"+msg.salepricemin+"','"+msg.image+"','" + i + "',"+"'button-cart" + i+"')")
+                    .attr("onclick", "addToCart('" + msg.productname + "','" + msg.code + "','" + msg.productid + "','" + msg.salepricemin + "','" + msg.image + "','" + i + "'," + "'button-cart" + i + "')")
                     .attr("class", "add-to-cart").attr("id", "button-cart" + i).appendTo('#div-control' + i);
             $('<em></em>', {text: "Add to cart"}).appendTo('#button-cart' + i);
             $('<svg></svg>').appendTo('#button-cart' + i)
@@ -60,8 +59,8 @@ $(function () {
 });
 
 function addToCart(productname, code, productid, salepricemin, image, quantity, btn) {
-    var animating=false;
-    var button = $("#"+btn);
+    var animating = false;
+    var button = $("#" + btn);
     if (!animating) {
         //animate if not already animating
         animating = true;
@@ -91,7 +90,7 @@ function addToCart(productname, code, productid, salepricemin, image, quantity, 
                 "productname": productname,
                 "code": code,
                 "productid": productid,
-                "quantity": $("#quantity"+quantity).val(),
+                "quantity": $("#quantity" + quantity).val(),
                 "unitprice": salepricemin,
                 "image": image
 
@@ -106,10 +105,14 @@ function addToCart(productname, code, productid, salepricemin, image, quantity, 
     });
 }
 function updateCart(json) {
-            var cart = $('.cd-cart');
-		( !cart.hasClass('items-added') ) && cart.addClass('items-added'); 
+    
+    var cart = $('.cd-cart');
+    (!cart.hasClass('items-added')) && cart.addClass('items-added');
 
-		var cartItems = cart.find('span'),
-			text = Object.keys(json).length;
-		cartItems.text(text);
-	}
+    var cartItems = cart.find('span'),
+            text = Object.keys(json).length;
+    cartItems.text(text);
+    
+    
+    
+}
