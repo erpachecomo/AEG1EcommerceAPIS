@@ -9,24 +9,21 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import mx.edu.ittepic.ecommerce.ejbs.CartBeanRemote;
-import mx.edu.ittepic.ecommerce.ejbs.EJBecommerce;
 import mx.edu.ittepic.ecommerce.utils.Message;
 
 /**
  *
  * @author ernesto
  */
-@WebServlet(name = "GetRoles", urlPatterns = {"/GetRoles"})
-public class GetRoles extends HttpServlet {
-    @EJB
-    private EJBecommerce ejb;
+@WebServlet(name = "CerrarSesion", urlPatterns = {"/CerrarSesion"})
+public class CerrarSesion extends HttpServlet {
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -38,7 +35,6 @@ public class GetRoles extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -53,22 +49,7 @@ public class GetRoles extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        response.setHeader("Cache-Control", "no-store");
-        PrintWriter out = response.getWriter();
-        
-        CartBeanRemote cart;
-        Message m = new Message();
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-
-        cart = (CartBeanRemote) request.getSession().getAttribute("ejbsession");
-        if (cart == null) {
-            response.sendRedirect("login.html");
-        } else {
-            out.print(ejb.getRoles());
-        }   
-        
+        processRequest(request, response);
     }
 
     /**
@@ -82,7 +63,27 @@ public class GetRoles extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        response.setHeader("Cache-Control", "no-store");
+        PrintWriter out = response.getWriter();
+        CartBeanRemote cart;
+        Message m = new Message();
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
 
+        cart = (CartBeanRemote) request.getSession().getAttribute("ejbsession");
+        if (cart == null) {
+            m.setCode(406);
+            m.setMsg("ño");
+            m.setDetail("");
+        } else {
+            cart.remove();
+            request.getSession().invalidate();
+            m.setCode(200);
+            m.setMsg("Bye");
+            m.setDetail("");
+        }   
+        out.print(gson.toJson(m));
     }
 
     /**

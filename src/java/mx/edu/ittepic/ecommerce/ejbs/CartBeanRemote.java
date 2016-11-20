@@ -17,5 +17,8 @@ public interface CartBeanRemote{
     public String removeProduct(String productid);
     public void remove();
     public void initialize();
+    public String login(String username, String password);
+    public int getUserid();
+    public String getUsername();
         
 }

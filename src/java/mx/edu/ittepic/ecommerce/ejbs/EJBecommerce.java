@@ -537,7 +537,7 @@ public class EJBecommerce {
 
     }
 
-    public String login(String user, String password) {
+    /*public String login(String user, String password) {
         Message m = new Message();
         Users u = new Users();
         GsonBuilder builder = new GsonBuilder();
@@ -559,7 +559,7 @@ public class EJBecommerce {
 
         return gson.toJson(m);
 
-    }
+    }*/
 
     public String newUser(String username, String password, String phone, String neigborhood, String zipcode,
             String city, String country, String state, String region, String street, String email,
@@ -769,7 +769,7 @@ public class EJBecommerce {
 
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        //try{
+        try{
 
         Query q = entity.createNamedQuery("Users.findByUsername")
                 .setParameter("username", username);
@@ -781,7 +781,11 @@ public class EJBecommerce {
         m.setCode(200);
         m.setMsg(gson.toJson(user));
         m.setDetail("OK");
-        //}
+        }catch(NoResultException e){
+            m.setCode(404);
+            m.setMsg("Usuario no encontrado");
+            m.setDetail(username);
+        }
         return gson.toJson(m);
     }
 

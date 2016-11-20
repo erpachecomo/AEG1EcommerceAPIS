@@ -100,7 +100,6 @@ $(function () {
         ajax: {
             url: "GetRoles",
             dataSrc: function(json){
-                
                 return $.parseJSON(json["msg"]);
             }
         },
