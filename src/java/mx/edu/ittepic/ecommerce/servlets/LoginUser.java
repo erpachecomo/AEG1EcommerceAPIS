@@ -5,15 +5,21 @@
  */
 package mx.edu.ittepic.ecommerce.servlets;
 
+import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.ejb.EJB;
+import static java.lang.System.out;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import mx.edu.ittepic.ecommerce.ejbs.EJBecommerce;
+import mx.edu.ittepic.ecommerce.ejb.EJBecommerceStatefulRemote;
+import mx.edu.ittepic.ecommerce.utils.Message;
 
 /**
  *
@@ -21,8 +27,6 @@ import mx.edu.ittepic.ecommerce.ejbs.EJBecommerce;
  */
 @WebServlet(name = "LoginUser", urlPatterns = {"/LoginUser"})
 public class LoginUser extends HttpServlet {
-    @EJB
-    EJBecommerce ejb;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -49,7 +53,33 @@ public class LoginUser extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        response.setHeader("Cache-Control", "no-store");
+        response.setContentType("application/json;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        
+        EJBecommerceStatefulRemote ejb = (EJBecommerceStatefulRemote) request.getSession().getAttribute("ejbsession");
+        
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        
+        if(ejb ==null){
+            InitialContext ic;
+            try{
+                ic = new InitialContext();
+                ejb = (EJBecommerceStatefulRemote) ic.lookup("java:comp/env/ejb/EJBecommerceStateful"); 
+                
+                 Message m = new GsonBuilder().create().fromJson(ejb.login(username, password), Message.class);
+                 
+                 if(m.getCode()==200){
+                     request.getSession().setAttribute("ejbsession", ejb);
+                 }
+                 out.print(new GsonBuilder().create().toJson(m));
+            } catch (NamingException ex) {
+                out.print(ex.toString());
+            }
+        }else{
+            response.sendRedirect("index.html");
+        }
     }
 
     /**
@@ -63,16 +93,6 @@ public class LoginUser extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setHeader("Cache-Control", "no-store");
-        response.setContentType("application/json;charset=UTF-8");
-        PrintWriter e = response.getWriter();
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        
-        e.print(ejb.login(username, password));
-        
-        
-        
     }
 
     /**

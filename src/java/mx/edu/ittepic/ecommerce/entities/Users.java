@@ -11,6 +11,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,7 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author ernesto
+ * @author miguel
  */
 @Entity
 @Table(name = "users")
@@ -50,29 +51,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Users.findByPhoto", query = "SELECT u FROM Users u WHERE u.photo = :photo"),
     @NamedQuery(name = "Users.findByCellphone", query = "SELECT u FROM Users u WHERE u.cellphone = :cellphone"),
     @NamedQuery(name = "Users.findByGender", query = "SELECT u FROM Users u WHERE u.gender = :gender"),
-    @NamedQuery(name = "Users.updateUser", query = "UPDATE Users u SET "
-            + "u.gender = :gender,"
-            + "u.username = :username,"
-            + "u.phone = :phone,"
-            + "u.neigborhood = :neigborhood,"
-            + "u.zipcode = :zipcode,"
-            + "u.country = :country,"
-            + "u.city = :city,"
-            + "u.state = :state,"
-            + "u.region = :region,"
-            + "u.street = :street,"
-            + "u.email = :email,"
-            + "u.streetnumber = :streetnumber,"
-            + "u.photo = :photo,"
-            + "u.cellphone = :cellphone,"
-            + "u.companyid = :companyid,"
-            + "u.roleid = :roleid "
-            + "WHERE u.userid = :userid"
-            
-    ),
-    @NamedQuery(name = "Users.login", query = "SELECT u FROM Users u WHERE u.username = :username AND u.password = :password")
-})
-
+    @NamedQuery(name = "Users.findByLogin", query = "SELECT u FROM Users u WHERE u.username = :username and u.password = :password")})
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -153,13 +132,13 @@ public class Users implements Serializable {
     @NotNull
     @Column(name = "gender")
     private Character gender;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userid")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userid", fetch = FetchType.LAZY)
     private List<Sale> saleList;
     @JoinColumn(name = "companyid", referencedColumnName = "companyid")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)//Agregar a todas las entidades
     private Company companyid;
     @JoinColumn(name = "roleid", referencedColumnName = "roleid")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Role roleid;
 
     public Users() {

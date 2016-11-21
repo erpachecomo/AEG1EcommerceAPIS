@@ -13,19 +13,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import mx.edu.ittepic.ecommerce.ejbs.EJBecommerce;
-import mx.edu.ittepic.ecommerce.utils.Message;
+import mx.edu.ittepic.ecommerce.ejb.EJBecommerce;
 
 /**
  *
- * @author Lamas
+ * @author miguel
  */
 @WebServlet(name = "UpdateCompany", urlPatterns = {"/UpdateCompany"})
 public class UpdateCompany extends HttpServlet {
-
     @EJB
-    private EJBecommerce ejb;
-
+    EJBecommerce ejb;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -37,7 +34,25 @@ public class UpdateCompany extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        response.setContentType("text/html;charset=UTF-8");
+        response.setHeader("Cache-Control","no-store");
+        PrintWriter out = response.getWriter();
+        
+        String companyid = request.getParameter("companyid");
+        String companyName = request.getParameter("companyname");
+        String neighborhood = request.getParameter("neighbohood");
+        String zipCode = request.getParameter("zipcode");
+        String city = request.getParameter("city");
+        String country = request.getParameter("country");
+        String state = request.getParameter("state");
+        String region = request.getParameter("region");
+        String street = request.getParameter("street");
+        String streetNumber = request.getParameter("streetNumbre");
+        String phone = request.getParameter("phone");
+        String rfc = request.getParameter("rfc");
+        String logo = request.getParameter("logo");
+        
+        out.print(ejb.updateCompany(companyid, companyName, neighborhood, zipCode, city, country, state, region, street, streetNumber, phone, rfc, logo));
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -66,25 +81,7 @@ public class UpdateCompany extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Message m = new Message();
-        response.setContentType("application/json;charset=UTF-8");
-        response.setHeader("Cache-Control", "no-store");
-
-        PrintWriter out = response.getWriter();
-        String id=  request.getParameter("companyid");
-        String name = request.getParameter("companyname");
-        String city = request.getParameter("city");
-        String country = request.getParameter("country");
-        String neigh = request.getParameter("neigh");
-        String zipcode = request.getParameter("zipcode");
-        String state = request.getParameter("state");
-        String region = request.getParameter("region");
-        String street = request.getParameter("street");
-        String streetnumber = request.getParameter("streetnumber");
-        String phone = request.getParameter("phone");
-        String rfc = request.getParameter("rfc");
-        String logo = request.getParameter("logo");
-        out.print(ejb.updateCompany(id,name, city, country,neigh, zipcode, state, region, street, streetnumber, phone, rfc, logo));
+        processRequest(request, response);
     }
 
     /**

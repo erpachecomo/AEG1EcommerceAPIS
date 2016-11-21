@@ -1,6 +1,6 @@
     $( function ()
     {
-        $( '#frmUser' ).validate( {
+        $( '#frmLogin' ).validate( {
             rules: {
                 username: {
                     minlength: 3 ,
@@ -71,9 +71,10 @@
             "username": $( '#username' ).val() ,
             "password": $( '#password' ).val()
         };
+        console.log(para);
         $.ajax( {
-            url: "GetUsersByName" ,
-            type: "post" ,
+            url: "LoginUSer" ,
+            type: "GET" ,
             /*Manda todo el formulario
              * como mandar parametros por separado en data:
              */
@@ -93,12 +94,6 @@
             else
             {
                 $.growl.error( { message: data.msg + "" + data.details } );
-
-
-
-
-
-
             }
         }
         ).fail(

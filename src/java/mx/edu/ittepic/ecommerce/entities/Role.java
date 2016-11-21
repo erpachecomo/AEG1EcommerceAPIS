@@ -11,6 +11,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,7 +25,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author ernesto
+ * @author miguel
  */
 @Entity
 @Table(name = "role")
@@ -32,8 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Role.findAll", query = "SELECT r FROM Role r"),
     @NamedQuery(name = "Role.findByRoleid", query = "SELECT r FROM Role r WHERE r.roleid = :roleid"),
-    @NamedQuery(name = "Role.findByRolename", query = "SELECT r FROM Role r WHERE r.rolename = :rolename"),
-    @NamedQuery(name = "Role.updateRole", query = "UPDATE Role r SET r.rolename = :rolename WHERE r.roleid = :roleid")})
+    @NamedQuery(name = "Role.findByRolename", query = "SELECT r FROM Role r WHERE r.rolename = :rolename")})
 public class Role implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -45,7 +45,7 @@ public class Role implements Serializable {
     @Size(max = 20)
     @Column(name = "rolename")
     private String rolename;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "roleid")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "roleid", fetch = FetchType.LAZY)//AGREGAR fetch = FetchType.LAZY a todas las entidades
     private List<Users> usersList;
 
     public Role() {

@@ -16,12 +16,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import mx.edu.ittepic.ecommerce.ejbs.CartBeanRemote;
-
+import mx.edu.ittepic.ecommerce.ejb.EJBecommerceStatefulRemote;
 
 /**
  *
- * @author ernesto
+ * @author miguel
  */
 @WebServlet(name = "AddProduct", urlPatterns = {"/AddProduct"})
 public class AddProduct extends HttpServlet {
@@ -37,43 +36,34 @@ public class AddProduct extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        response.setHeader("Cache-Control", "no-store");
-        PrintWriter o = response.getWriter();
-        InitialContext ic;
-        String productid;
-        String productname;
-        String quantity;
-        String code;
-        String unitprice;
-        String image;
+        response.setContentType("text/html;charset=UTF-8");
+        response.setHeader("Cache-Control","no-store");
+        PrintWriter out = response.getWriter();
         
-        CartBeanRemote cart;
+        EJBecommerceStatefulRemote cart = (EJBecommerceStatefulRemote) request.getSession().getAttribute("ejbsession");
         
-        cart = (CartBeanRemote) request.getSession().getAttribute("ejbsession");
-        productid = (request.getParameter("productid"));
-        productname = request.getParameter("productname");
-        quantity = request.getParameter("quantity");
-        code = request.getParameter("code");
-        unitprice = request.getParameter("unitprice");
-        image = request.getParameter("image");
-        
+        String productName = request.getParameter("productname");
+        String productCode = request.getParameter("code");
+        int productQuantity = Integer.parseInt(request.getParameter("quantity"));
+        double productPrice = Double.parseDouble(request.getParameter("unitprice"));
+        String productImage = request.getParameter("image");
         
         if(cart==null){
-            try {
-                //Necesarias para instanciar un ejb desde jndi
+            InitialContext ic;
+            
+            try{
                 ic = new InitialContext();
-                cart = (CartBeanRemote) ic.lookup("java:comp/env/ejb/CartBean");
-                request.getSession().setAttribute("ejbsession",cart);
-                o.print(cart.addProduct(productid, productname, code, quantity, image, unitprice));
-            } catch (NamingException ex) {
+                cart = (EJBecommerceStatefulRemote) ic.lookup("java:comp/env/ejb/EJBecommerceStateful");
+                request.getSession().setAttribute("ejbsession", cart);
+                
+                out.printf(cart.addProduct(productCode, productName, productQuantity, productPrice, productImage));
+                
+            }catch (NamingException ex) {
                 Logger.getLogger(AddProduct.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }else{
-            o.print(cart.addProduct(productid, productname, code, quantity, image, unitprice));
+        } else{
+            out.printf(cart.addProduct(productCode, productName, productQuantity, productPrice, productImage));
         }
-        
-        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

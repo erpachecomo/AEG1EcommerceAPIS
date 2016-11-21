@@ -20,7 +20,23 @@ jQuery(document).ready(function(){
 				touchSettings = actual.next('.cd-customization-trigger');
 
 			//detect click on ul.size/ul.color list elements 
-
+			selectOptions.on('click', function(event) { 
+				var selected = $(this);
+				//open/close options list
+				selected.toggleClass('is-open');
+				resetCustomization(selected);
+				
+				if($(event.target).is('li')) {
+					// update selected option
+					var activeItem = $(event.target),
+						index = activeItem.index() + 1;
+					
+					activeItem.addClass('active').siblings().removeClass('active');
+					selected.removeClass('selected-1 selected-2 selected-3').addClass('selected-'+index);
+					// if color has been changed, update the visible product image 
+					selected.hasClass('color') && updateSlider(selected, index-1);
+				}
+			});
 
 			//detect click on the add-to-cart button
 			addToCartBtn.on('click', function() {	

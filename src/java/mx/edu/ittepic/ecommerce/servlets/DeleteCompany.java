@@ -13,12 +13,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import mx.edu.ittepic.ecommerce.ejbs.EJBecommerce;
-import mx.edu.ittepic.ecommerce.utils.Message;
+import mx.edu.ittepic.ecommerce.ejb.EJBecommerce;
 
 /**
  *
- * @author Lamas
+ * @author miguel
  */
 @WebServlet(name = "DeleteCompany", urlPatterns = {"/DeleteCompany"})
 public class DeleteCompany extends HttpServlet {
@@ -35,7 +34,11 @@ public class DeleteCompany extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        response.setContentType("text/html;charset=UTF-8");
+        response.setHeader("Cache-Control","no-store");
+        PrintWriter out = response.getWriter();
+        String companyid = request.getParameter("companyid");
+        out.print(ejb.deleteCompany(companyid));
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -64,12 +67,7 @@ public class DeleteCompany extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         Message m = new Message();
-        response.setContentType("application/json;charset=UTF-8");
-        response.setHeader("Cache-Control", "no-store");
-         PrintWriter out = response.getWriter();
-        String id=  request.getParameter("companyid"); 
-        out.print(ejb.deleteCompany(id));
+        processRequest(request, response);
     }
 
     /**
