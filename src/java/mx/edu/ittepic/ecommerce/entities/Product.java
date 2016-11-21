@@ -88,10 +88,10 @@ public class Product implements Serializable {
     @NotNull
     @Column(name = "salepricemay")
     private double salepricemay;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "productid", fetch = FetchType.LAZY)
-    private List<Salesline> saleslineList;
+    /*@OneToMany(cascade = CascadeType.ALL, mappedBy = "productid", fetch = FetchType.LAZY)
+    private List<Salesline> saleslineList;*/
     @JoinColumn(name = "categoryid", referencedColumnName = "categoryid")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     private Category categoryid;
 
     public Product() {
@@ -189,7 +189,7 @@ public class Product implements Serializable {
         this.salepricemay = salepricemay;
     }
 
-    @XmlTransient
+/*    @XmlTransient
     public List<Salesline> getSaleslineList() {
         return saleslineList;
     }
@@ -197,7 +197,7 @@ public class Product implements Serializable {
     public void setSaleslineList(List<Salesline> saleslineList) {
         this.saleslineList = saleslineList;
     }
-
+*/
     public Category getCategoryid() {
         return categoryid;
     }
