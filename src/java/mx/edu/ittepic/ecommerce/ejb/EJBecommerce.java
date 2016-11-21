@@ -22,6 +22,7 @@ import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
 import javax.persistence.QueryTimeoutException;
 import javax.persistence.TransactionRequiredException;
+import javax.ws.rs.HEAD;
 import mx.edu.ittepic.ecommerce.entities.Category;
 import mx.edu.ittepic.ecommerce.entities.Company;
 import mx.edu.ittepic.ecommerce.entities.Product;
@@ -29,6 +30,7 @@ import mx.edu.ittepic.ecommerce.entities.Role;
 import mx.edu.ittepic.ecommerce.entities.Sale;
 import mx.edu.ittepic.ecommerce.entities.Users;
 import mx.edu.ittepic.ecommerce.utils.Message;
+import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  *
@@ -595,7 +597,8 @@ public class EJBecommerce {
 
             entity.persist(u);
             entity.flush();
-
+            u.setApikey(DigestUtils.md5Hex(u.getUserid()+""));
+            entity.merge(u);
             m.setCode(200);
             m.setMsg("El usuario se creó correctamente");
             m.setDetail(u.getUserid() + "");
@@ -735,7 +738,7 @@ public class EJBecommerce {
             user = (Users) q.getSingleResult();
             user.getCompanyid().setUsersList(null);
             user.getRoleid().setUsersList(null);
-            user.setSaleList(null);
+            //user.setSaleList(null);
             user.setPassword(null);
             m.setCode(200);
             m.setMsg(gson.toJson(user));
@@ -773,7 +776,7 @@ public class EJBecommerce {
             user = (Users) q.getSingleResult();
             user.getCompanyid().setUsersList(null);
             user.getRoleid().setUsersList(null);
-            user.setSaleList(null);
+            //user.setSaleList(null);
         } catch (IllegalArgumentException e) {
             msg.setCode(422);
             msg.setMsg("Error de entidad, el usuario no es una entidad.");
@@ -819,7 +822,7 @@ public class EJBecommerce {
         user = (Users) q.getSingleResult();
         user.getCompanyid().setUsersList(null);
         user.getRoleid().setUsersList(null);
-        user.setSaleList(null);
+//        user.setSaleList(null);
         user.setPassword(null);
         m.setCode(200);
         m.setMsg(gson.toJson(user));
@@ -839,7 +842,7 @@ public class EJBecommerce {
 
             users = q.getResultList();
             for (Users p : users) {
-                p.setSaleList(null);
+//                p.setSaleList(null);
                 p.getCompanyid().setUsersList(null);
                 p.getRoleid().setUsersList(null);
             }
