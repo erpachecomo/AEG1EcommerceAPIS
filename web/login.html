@@ -1,8 +1,4 @@
 <!DOCTYPE html>
-<!-- 
-Tarea! validate this form
-Que pregunte si el usuario ya existe o no en la bd.
--->
 <html>
     <head>
         <title>TODO supply a title</title>
@@ -13,21 +9,21 @@ Que pregunte si el usuario ya existe o no en la bd.
         <script type="text/javascript" src="js/plugins/jquery.growl.js"></script>
         <script type="text/javascript" src="js/login.js"></script>
         <script src="js/plugins/sweetalert.min.js"></script>
-        <script type="text/javascript" src="js/plugins/bootstrap.min.js"></script>
+        <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
         <link rel="stylesheet" type="text/css" href="css/sweetalert.css">
         <link rel="stylesheet" type="text/css" href="css/style.css">
 
         <link rel="stylesheet" href="css/bootstrap.min.css"/>
         <link href="css/jquery.growl.css" rel="stylesheet" type="text/css" />
-      
+        <link href="css/responsive.bootstrap.min.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-        <div class="container col-sm-4 col-sm-offset-4" >
+        <div class="container col-sm-5 col-sm-offset-3" >
             <form id="frmLogin">
-                <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="col col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-group">
-                        <label class="control-label" for="username">Usuario</label>
+                        <label class="control-label" for="username">User</label>
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <i class="glyphicon glyphicon-user"></i>
@@ -35,18 +31,15 @@ Que pregunte si el usuario ya existe o no en la bd.
                             <input class="form-control" id="username" name="username" placeholder="User Name">
                         </div>
                     </div>
-
-
                 </div>
-                <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12">
-
+                <div class="col col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-group">
                         <label class="control-label" for="password">Password</label>
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <i class="glyphicon glyphicon-lock"></i>
                             </span>
-                            <input class="form-control" type="password" id="password" name="password" placeholder="Password">
+                            <input class="form-control" id="password" name="password" placeholder="Password" type="password">
                         </div>
                     </div>
 

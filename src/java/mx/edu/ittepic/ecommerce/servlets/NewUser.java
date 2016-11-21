@@ -7,12 +7,13 @@ package mx.edu.ittepic.ecommerce.servlets;
 
 import java.io.IOException;
 import javax.ejb.EJB;
+import org.apache.commons.codec.digest.DigestUtils;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import mx.edu.ittepic.ecommerce.ejbs.EJBecommerce;
+import mx.edu.ittepic.ecommerce.ejb.EJBecommerce;
 
 /**
  *
@@ -82,8 +83,9 @@ public class NewUser extends HttpServlet {
         String companyid = request.getParameter("companyid");
         String roleid = request.getParameter("roleid");
         String gender = request.getParameter("gender");
+        String passwordMD5=DigestUtils.md5Hex(password); 
               
-        response.getWriter().print(ejb.newUser(username, password, phone, neigborhood, zipcode, city, country, state, region, street, email, streetnumber, photo, cellphone, companyid, roleid, gender));
+        response.getWriter().print(ejb.newUser(username, passwordMD5, phone, neigborhood, zipcode, city, country, state, region, street, email, streetnumber, photo, cellphone, companyid, roleid, gender));
     }
 
     /**

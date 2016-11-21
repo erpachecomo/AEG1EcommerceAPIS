@@ -1,9 +1,11 @@
+
 $(function () {
     $.ajax({
         url: 'GetProducts',
         type: 'GET',
         async: false
-
+                //,
+                // dataType: 'json'
     }).done(function (json1) {
         //console.log("json:"+json1);
         $.each($.parseJSON(json1.msg), function (i, msg) {
@@ -20,11 +22,11 @@ $(function () {
             $('<div></div>').attr("id", "div-input-group" + i).attr("class", "input-group").appendTo('#div-form' + i);
             //$('<span></span>').attr("id", "span-icon" + i).attr("class", "input-group-addon").appendTo('#div-input-group' + i);
             //$('<i></i>').attr("class", "glyphicon glyphicon-plus").appendTo('#span-icon' + i);
-            $('<input>').attr("class", "form-control").attr("min", '1').attr("max", msg.stock).attr("type", "number").attr("id", "quantity" + i).attr("name", "quantity" + i).attr("placeholder", "Cantidad").appendTo('#div-input-group' + i);
+            $('<input>').attr("class", "form-control").attr("min", '1').attr("max", "'" + msg.stock + "'").attr("type", "number").attr("id", "quantity" + i).attr("name", "quantity" + i).attr("placeholder", "Cantidad").appendTo('#div-input-group' + i);
             //console.log("addToCart("+msg.productid+",$('#quantity" + i+"').val())");
-
+            
             $('<button></button>')
-                    .attr("onclick", "addToCart('" + msg.productname + "','" + msg.code + "','" + msg.productid + "','" + msg.salepricemin + "','" + msg.image + "','" + i + "'," + "'button-cart" + i + "')")
+                    .attr("onclick", "addToCart('"+msg.productname+"','"+msg.code+"','"+msg.productid+"','"+msg.salepricemin+"','"+msg.image+"','" +i + "',"+"'button-cart" + i+"')")
                     .attr("class", "add-to-cart").attr("id", "button-cart" + i).appendTo('#div-control' + i);
             $('<em></em>', {text: "Add to cart"}).appendTo('#button-cart' + i);
             $('<svg></svg>').appendTo('#button-cart' + i)
@@ -56,11 +58,19 @@ $(function () {
 
         });
     });
+     /*$.ajax({
+        url: 'GetCart',
+        type: 'GET',
+        dataType: 'json',
+    }).done(function (json) {
+        console.log(json);
+        updateCart(json);
+    });*/
 });
 
 function addToCart(productname, code, productid, salepricemin, image, quantity, btn) {
-    var animating = false;
-    var button = $("#" + btn);
+    var animating=false;
+    var button = $("#"+btn);
     if (!animating) {
         //animate if not already animating
         animating = true;
@@ -90,7 +100,7 @@ function addToCart(productname, code, productid, salepricemin, image, quantity, 
                 "productname": productname,
                 "code": code,
                 "productid": productid,
-                "quantity": $("#quantity" + quantity).val(),
+                "quantity": $("#quantity"+quantity).val(),
                 "unitprice": salepricemin,
                 "image": image
 
@@ -101,18 +111,66 @@ function addToCart(productname, code, productid, salepricemin, image, quantity, 
         dataType: 'json',
         data: data
     }).done(function (json) {
+        console.log(json);
         updateCart(json);
     });
 }
 function updateCart(json) {
-    
-    var cart = $('.cd-cart');
+    var cart = $('.cd-cart2');
     (!cart.hasClass('items-added')) && cart.addClass('items-added');
 
     var cartItems = cart.find('span'),
             text = Object.keys(json).length;
     cartItems.text(text);
-    
-    
-    
+    var $total = 0;
+    $('#lista-cart').empty();
+    $('.cd-cart-total').empty();
+    $.each(json, function (i, msg) {
+        
+        var addtoCart = $('.cd-cart-items');
+        var $item = $('<li> <span class="cd-qty">' + msg.productquantity + ' </span>' + msg.productname + ' \n\
+                            <div class="cd-price"> $' + msg.productquantity * msg.productprice + ' </div> \n\
+                            <a href="#0" class="cd-item-remove cd-img-replace" onclick="removeCart("'+msg.productcode+'")" > Remove </a></li>');
+        $($item).attr('id', 'li-cart').appendTo('#lista-cart');
+        $total = $total + (msg.productquantity * msg.productprice);
+    });
+    $total = $('<p>Total<span id="totalSale">'+$total+'</span></p>');
+    $($total).appendTo('.cd-cart-total');
+            
+}
+
+function removeCart(code){
+    var data = {
+        "code": code
+    }; 
+    $.ajax({
+        url: 'RemoveCart',
+        type: 'POST',
+        dataType: 'json',
+        data: data
+    }).done(function (json) {
+        updateCart(json);
+    });
+}
+
+function newSale(){
+    var data={
+        "userid": 3,
+        "amount": document.getElementById("totalSale").innerHTML
+    }
+    console.log(data);
+    $.ajax({
+        url: 'NewSale',
+        type: 'POST',
+        dataType: 'json',
+        data: data
+    }).done(function (data) {
+        if(data.code==200){
+            $.growl.notice({message:data.msg});
+        }else{
+            $.growl.notice({message:data.msg});
+        }
+    }).fail(function(){
+        $.growl.notice({message:"El servidor no está disponible 😞"});
+    });
 }

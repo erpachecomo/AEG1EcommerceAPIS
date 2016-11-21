@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mx.edu.ittepic.ecommerce.ejbs;
+package mx.edu.ittepic.ecommerce.ejb;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,16 +21,15 @@ import javax.persistence.PersistenceException;
 import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
 import javax.persistence.QueryTimeoutException;
-import javax.persistence.RollbackException;
 import javax.persistence.TransactionRequiredException;
 import mx.edu.ittepic.ecommerce.entities.Category;
 import mx.edu.ittepic.ecommerce.entities.Company;
 import mx.edu.ittepic.ecommerce.entities.Product;
 import mx.edu.ittepic.ecommerce.entities.Role;
 import mx.edu.ittepic.ecommerce.entities.Sale;
-import mx.edu.ittepic.ecommerce.entities.Salesline;
 import mx.edu.ittepic.ecommerce.entities.Users;
 import mx.edu.ittepic.ecommerce.utils.Message;
+import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  *
@@ -537,7 +536,7 @@ public class EJBecommerce {
 
     }
 
-    /*public String login(String user, String password) {
+    public String login(String user, String password) {
         Message m = new Message();
         Users u = new Users();
         GsonBuilder builder = new GsonBuilder();
@@ -559,7 +558,7 @@ public class EJBecommerce {
 
         return gson.toJson(m);
 
-    }*/
+    }
 
     public String newUser(String username, String password, String phone, String neigborhood, String zipcode,
             String city, String country, String state, String region, String street, String email,
@@ -597,7 +596,8 @@ public class EJBecommerce {
 
             entity.persist(u);
             entity.flush();
-
+            u.setApikey(DigestUtils.md5Hex(u.getUserid()+""));
+            entity.merge(u);
             m.setCode(200);
             m.setMsg("El usuario se creó correctamente");
             m.setDetail(u.getUserid() + "");
@@ -737,7 +737,7 @@ public class EJBecommerce {
             user = (Users) q.getSingleResult();
             user.getCompanyid().setUsersList(null);
             user.getRoleid().setUsersList(null);
-            user.setSaleList(null);
+            //user.setSaleList(null);
             user.setPassword(null);
             m.setCode(200);
             m.setMsg(gson.toJson(user));
@@ -762,6 +762,51 @@ public class EJBecommerce {
 
         return gson.toJson(m);
     }
+    
+    public String getLogin(String username, String password){
+        Message msg = new Message();
+        Users user;
+        
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        try{
+            Query q = entity.createNamedQuery("Users.findByUsername")
+                    .setParameter("username", username).setParameter("password", password);
+            user = (Users) q.getSingleResult();
+            user.getCompanyid().setUsersList(null);
+            user.getRoleid().setUsersList(null);
+//            user.setSaleList(null);
+        } catch (IllegalArgumentException e) {
+            msg.setCode(422);
+            msg.setMsg("Error de entidad, el usuario no es una entidad.");
+            msg.setDetail(e.toString());
+        } catch (IllegalStateException e) {
+            msg.setCode(422);
+            msg.setMsg("Error de entidad, el usuario no es una entidad o ha sido removido.");
+            msg.setDetail(e.toString());
+        } catch (QueryTimeoutException e) {
+            msg.setCode(509);
+            msg.setMsg("La operación tardo demasiado, por favor vuelve a intentarlo.");
+            msg.setDetail(e.toString());
+        } catch (TransactionRequiredException e) {
+            msg.setCode(509);
+            msg.setMsg("La operación tardo demasiado, por favor vuelve a intentarlo.");
+            msg.setDetail(e.toString());
+        } catch (PessimisticLockException e) {
+            msg.setCode(400);
+            msg.setMsg("Error, operación bloqueada (Pesimistic), no se realizo la transacción.");
+            msg.setDetail(e.toString());
+        } catch (LockTimeoutException e) {
+            msg.setCode(400);
+            msg.setMsg("Error, operación bloqueada (Lock), no se realizo la transacción.");
+            msg.setDetail(e.toString());
+        } catch (PersistenceException e) {
+            msg.setCode(400);
+            msg.setMsg("Error, operación bloqueada (Persistence), no se realizo la transacción.");
+            msg.setDetail(e.toString());
+        }
+        return gson.toJson(msg);
+    }
 
     public String getUserByUsername(String username) {
         Message m = new Message();
@@ -769,23 +814,19 @@ public class EJBecommerce {
 
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        try{
+        //try{
 
         Query q = entity.createNamedQuery("Users.findByUsername")
                 .setParameter("username", username);
         user = (Users) q.getSingleResult();
         user.getCompanyid().setUsersList(null);
         user.getRoleid().setUsersList(null);
-        user.setSaleList(null);
+//        user.setSaleList(null);
         user.setPassword(null);
         m.setCode(200);
         m.setMsg(gson.toJson(user));
         m.setDetail("OK");
-        }catch(NoResultException e){
-            m.setCode(404);
-            m.setMsg("Usuario no encontrado");
-            m.setDetail(username);
-        }
+        //}
         return gson.toJson(m);
     }
 
@@ -800,7 +841,7 @@ public class EJBecommerce {
 
             users = q.getResultList();
             for (Users p : users) {
-                p.setSaleList(null);
+//                p.setSaleList(null);
                 p.getCompanyid().setUsersList(null);
                 p.getRoleid().setUsersList(null);
             }
@@ -1195,48 +1236,6 @@ public class EJBecommerce {
         }
     }
     
-    public String deleteSale(String saleid) {
-
-        Message m = new Message();
-        Sale s;
-
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        try {
-
-            Query q = entity.createNamedQuery("Sale.findBySaleid").setParameter("saleid", Integer.parseInt(saleid));
-            s = (Sale) q.getSingleResult();
-
-            entity.remove(s);
-            entity.flush();
-
-            m.setCode(200);
-            m.setMsg("El sale fue eliminado correctamente");
-            m.setDetail("OK");
-        } catch (NoResultException e) {
-            m.setCode(404);
-            m.setMsg("El sale no fue encontrado.");
-            m.setDetail(e.getMessage());
-        } catch (NonUniqueResultException e) {
-            m.setCode(400);
-            m.setMsg("El sale no es unico, comunicate con el administrador.");
-            m.setDetail(e.getMessage());
-        } catch (IllegalStateException e) {
-            m.setCode(422);
-            m.setMsg("Error de entidad, el sale no es una entidad o ha sido removido.");
-            m.setDetail(e.toString());
-        } catch (QueryTimeoutException e) {
-            m.setCode(422);
-            m.setMsg("La operación tardo demasiado, por favor vuelve a intentarlo.");
-            m.setDetail(e.toString());
-        } catch (TransactionRequiredException e) {
-            m.setCode(509);
-            m.setMsg("La operación tardo demasiado, por favor vuelve a intentarlo.");
-            m.setDetail(e.toString());
-        }
-        return gson.toJson(m);
-    }
-
     public String newSale(String userid, String amount){
         Message m = new Message();
         Sale s = new Sale();
@@ -1278,175 +1277,6 @@ public class EJBecommerce {
             m.setDetail(e.toString());
         }
         return gson.toJson(m);
-    }
-    
-    public String updateSale(String saleid, String userid, String amount){
-        Message m = new Message();
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        Users u;
-        try {
-            Sale s = new Sale();
-            s = entity.find(Sale.class, Integer.parseInt(saleid));
-            if (s == null) {
-                m.setCode(404);
-                m.setMsg("No se encontro");
-                m.setDetail("");
-            } else {
-                u = entity.find(Users.class, Integer.parseInt(userid));
-                s.setAmount(Double.parseDouble(amount));
-                s.setUserid(u);
-                entity.merge(s);
-                m.setCode(200);
-                m.setMsg("Se modifico correctamente");
-                m.setDetail("OK");
-            }
-            return gson.toJson(m);
-        } catch (IllegalArgumentException e) {
-            m.setCode(404);
-            m.setMsg(e.getMessage());
-            m.setDetail("Error");
-            return gson.toJson(m);
-        } catch (TransactionRequiredException e) {
-            m.setCode(404);
-            m.setMsg(e.getMessage());
-            m.setDetail("Error");
-            return gson.toJson(m);
-        }
-
-    }
-
-
-    public String deleteSalesLine(String saleslineid) {
-
-        Message m = new Message();
-        Salesline s;
-
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        try {
-
-            Query q = entity.createNamedQuery("Salesline.findBySaleslineid").setParameter("saleslineid", Integer.parseInt(saleslineid));
-            s = (Salesline) q.getSingleResult();
-
-            entity.remove(s);
-            entity.flush();
-
-            m.setCode(200);
-            m.setMsg("El saleline fue eliminado correctamente");
-            m.setDetail("OK");
-        } catch (NoResultException e) {
-            m.setCode(404);
-            m.setMsg("El sale no fue encontrado.");
-            m.setDetail(e.getMessage());
-        } catch (NonUniqueResultException e) {
-            m.setCode(400);
-            m.setMsg("El sale no es unico, comunicate con el administrador.");
-            m.setDetail(e.getMessage());
-        } catch (IllegalStateException e) {
-            m.setCode(422);
-            m.setMsg("Error de entidad, el sale no es una entidad o ha sido removido.");
-            m.setDetail(e.toString());
-        } catch (QueryTimeoutException e) {
-            m.setCode(422);
-            m.setMsg("La operación tardo demasiado, por favor vuelve a intentarlo.");
-            m.setDetail(e.toString());
-        } catch (TransactionRequiredException e) {
-            m.setCode(509);
-            m.setMsg("La operación tardo demasiado, por favor vuelve a intentarlo.");
-            m.setDetail(e.toString());
-        }
-        return gson.toJson(m);
-    }
-
-    public String newSalesLine(String quantity, String saleid, String productid, String purchprice, String saleprice) {
-        Message m = new Message();
-        Salesline s = new Salesline();
-        Sale sale;
-        Product p;
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        Query q;
-        try {
-            q = entity.createNamedQuery("Sale.findBySaleid").setParameter("saleid", Integer.parseInt(saleid));
-            sale =(Sale) q.getSingleResult();
-            q = entity.createNamedQuery("Product.findByProductid").setParameter("productid", Integer.parseInt(productid));
-            p =(Product) q.getSingleResult();
-            s.setProductid(p);
-            s.setPurchprice(Double.parseDouble(purchprice));
-            s.setQuantity(Integer.parseInt(quantity));
-            s.setSaleid(sale);
-            s.setSaleprice(Double.parseDouble(saleprice));
-            
-            entity.persist(s); // Si el id existe hace un update, sino guarda una nuevo. Persistencia manejada por le contenedor
-            entity.flush();
-
-            m.setCode(200);
-            m.setMsg("El sale se creó correctamente");
-            m.setDetail(s.getSaleid()+ "");
-        } catch (NumberFormatException e) {
-            m.setCode(406);
-            m.setMsg("Error de tipo de dato.");
-            m.setDetail(e.toString());
-        } catch (EntityExistsException e) {
-            m.setCode(400);
-            m.setMsg("El rol que intentas ingresar ya existe.");
-            m.setDetail(e.toString());
-        } catch (IllegalArgumentException e) {
-            m.setCode(422);
-            m.setMsg("Error de entidad, el sale no es una entidad o ha sido removido.");
-            m.setDetail(e.toString());
-        } catch (TransactionRequiredException e) {
-            m.setCode(509);
-            m.setMsg("La transacción no pudo ser completada. Espera un momento y vuelve a intentar.");
-            m.setDetail(e.toString());
-        } catch (EntityNotFoundException e) {
-            m.setCode(404);
-            m.setMsg("El sale introducido no existe, no se puede actualizar.");
-            m.setDetail(e.toString());
-        }
-        return gson.toJson(m);
-    }
-
-    public String updateSalesLine(String saleslineid,String quantity, String saleid, String productid, String purchprice, String saleprice) {
-        Message m = new Message();
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        Sale s;
-        Product p;
-        try {
-            Salesline sale = new Salesline();
-            sale = entity.find(Salesline.class, Integer.parseInt(saleslineid));
-            if (sale == null) {
-                m.setCode(404);
-                m.setMsg("No se encontro");
-                m.setDetail("");
-            } else {
-                s = entity.find(Sale.class, Integer.parseInt(saleid));
-                p = entity.find(Product.class, Integer.parseInt(productid));
-                sale.setPurchprice(Double.parseDouble(purchprice));
-                sale.setProductid(p);
-                sale.setQuantity(Integer.parseInt(quantity));
-                sale.setSaleid(s);
-                sale.setSaleprice(Double.parseDouble(saleprice));
-                entity.merge(sale);
-                m.setCode(200);
-                m.setMsg("Se modifico correctamente");
-                m.setDetail("OK");
-            }
-            return gson.toJson(m);
-        } catch (IllegalArgumentException e) {
-            m.setCode(404);
-            m.setMsg(e.getMessage());
-            m.setDetail("Error");
-            return gson.toJson(m);
-        } catch (TransactionRequiredException e) {
-            m.setCode(404);
-            m.setMsg(e.getMessage());
-            m.setDetail("Error");
-            return gson.toJson(m);
-        }
-
     }
 
 }

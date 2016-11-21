@@ -6,9 +6,7 @@
 package mx.edu.ittepic.ecommerce.entities;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,12 +16,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -50,29 +46,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Users.findByPhoto", query = "SELECT u FROM Users u WHERE u.photo = :photo"),
     @NamedQuery(name = "Users.findByCellphone", query = "SELECT u FROM Users u WHERE u.cellphone = :cellphone"),
     @NamedQuery(name = "Users.findByGender", query = "SELECT u FROM Users u WHERE u.gender = :gender"),
-    @NamedQuery(name = "Users.updateUser", query = "UPDATE Users u SET "
-            + "u.gender = :gender,"
-            + "u.username = :username,"
-            + "u.phone = :phone,"
-            + "u.neigborhood = :neigborhood,"
-            + "u.zipcode = :zipcode,"
-            + "u.country = :country,"
-            + "u.city = :city,"
-            + "u.state = :state,"
-            + "u.region = :region,"
-            + "u.street = :street,"
-            + "u.email = :email,"
-            + "u.streetnumber = :streetnumber,"
-            + "u.photo = :photo,"
-            + "u.cellphone = :cellphone,"
-            + "u.companyid = :companyid,"
-            + "u.roleid = :roleid "
-            + "WHERE u.userid = :userid"
-            
-    ),
-    @NamedQuery(name = "Users.login", query = "SELECT u FROM Users u WHERE u.username = :username AND u.password = :password")
-})
-
+    @NamedQuery(name = "Users.findByApikey", query = "SELECT u FROM Users u WHERE u.apikey = :apikey")})
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -153,8 +127,9 @@ public class Users implements Serializable {
     @NotNull
     @Column(name = "gender")
     private Character gender;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userid")
-    private List<Sale> saleList;
+    @Size(max = 50)
+    @Column(name = "apikey")
+    private String apikey;
     @JoinColumn(name = "companyid", referencedColumnName = "companyid")
     @ManyToOne(optional = false)
     private Company companyid;
@@ -314,13 +289,12 @@ public class Users implements Serializable {
         this.gender = gender;
     }
 
-    @XmlTransient
-    public List<Sale> getSaleList() {
-        return saleList;
+    public String getApikey() {
+        return apikey;
     }
 
-    public void setSaleList(List<Sale> saleList) {
-        this.saleList = saleList;
+    public void setApikey(String apikey) {
+        this.apikey = apikey;
     }
 
     public Company getCompanyid() {

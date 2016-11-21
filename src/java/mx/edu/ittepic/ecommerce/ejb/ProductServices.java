@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mx.edu.ittepic.ecommerce.ejbs;
+package mx.edu.ittepic.ecommerce.ejb;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -13,7 +13,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -22,30 +21,25 @@ import mx.edu.ittepic.ecommerce.entities.Role;
 
 /**
  *
- * @author ernesto
+ * @author miguel
  */
 @Stateless
 @Path("/product")
-
-//Anotaciones derivadas de javax.ws.rs T1U3
 public class ProductServices {
-
-    @PersistenceContext
-    private EntityManager entity;
-    
+     @PersistenceContext
+     private EntityManager entity;
+    // Add business logic below. (Right-click in editor and choose
+    // "Insert Code > Add Business Method")
     @GET
     @Path("/list")
     @Produces({MediaType.TEXT_PLAIN})
     public String getRoles(){
-        List<Role> roles = new ArrayList<>();
+        List<Role> role = new ArrayList<>();
         Query q = entity.createNamedQuery("Role.findAll");
-        roles=q.getResultList();
-        /*for(Role r:roles){
-            
-        }*/
-        
+        role = q.getResultList();
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        return gson.toJson(roles);
+        
+        return gson.toJson(role);
     }
 }

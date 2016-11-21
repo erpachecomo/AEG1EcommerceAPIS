@@ -66,7 +66,7 @@ header h1 {
 Cart button
 
 -------------------------------- */
-.cd-cart {
+.cd-cart2 {
   position: absolute;
   z-index: 2;
   top: 24px;
@@ -75,7 +75,7 @@ Cart button
   width: 50px;
   background: url(../img/cd-icon-cart.svg) no-repeat center center;
 }
-.cd-cart span {
+.cd-cart2 span {
   /* number of items added to the cart */
   position: absolute;
   top: 2px;
@@ -99,7 +99,7 @@ Cart button
   -moz-transition: -moz-transform 0.2s 0s;
   transition: transform 0.2s 0s;
 }
-.cd-cart.items-added span {
+.cd-cart2.items-added span {
   /* counter visible when a product is added to the cart */
   -webkit-transform: scale(1);
   -moz-transform: scale(1);
@@ -108,7 +108,7 @@ Cart button
   transform: scale(1);
 }
 @media only screen and (min-width: 1100px) {
-  .cd-cart {
+  .cd-cart2 {
     position: fixed;
     top: 30px;
     right: 30px;

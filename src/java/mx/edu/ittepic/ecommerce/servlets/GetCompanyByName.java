@@ -5,25 +5,24 @@
  */
 package mx.edu.ittepic.ecommerce.servlets;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import mx.edu.ittepic.ecommerce.ejbs.CartBeanRemote;
-import mx.edu.ittepic.ecommerce.utils.Message;
+import mx.edu.ittepic.ecommerce.ejb.EJBecommerce;
 
 /**
  *
- * @author ernesto
+ * @author miguel
  */
-@WebServlet(name = "CerrarSesion", urlPatterns = {"/CerrarSesion"})
-public class CerrarSesion extends HttpServlet {
-
+@WebServlet(name = "GetCompanyByName", urlPatterns = {"/GetCompanyByName"})
+public class GetCompanyByName extends HttpServlet {
+    @EJB
+    private EJBecommerce ejb;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -35,6 +34,10 @@ public class CerrarSesion extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        String companyname = request.getParameter("companyname");
+        //out.print(ejb.getCompanyByName(companyname));
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -63,27 +66,7 @@ public class CerrarSesion extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        response.setHeader("Cache-Control", "no-store");
-        PrintWriter out = response.getWriter();
-        CartBeanRemote cart;
-        Message m = new Message();
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-
-        cart = (CartBeanRemote) request.getSession().getAttribute("ejbsession");
-        if (cart == null) {
-            m.setCode(406);
-            m.setMsg("ño");
-            m.setDetail("");
-        } else {
-            cart.remove();
-            request.getSession().invalidate();
-            m.setCode(200);
-            m.setMsg("Bye");
-            m.setDetail("");
-        }   
-        out.print(gson.toJson(m));
+        processRequest(request, response);
     }
 
     /**

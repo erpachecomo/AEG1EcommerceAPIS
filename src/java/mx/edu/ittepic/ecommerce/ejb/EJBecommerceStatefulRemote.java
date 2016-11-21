@@ -3,22 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package mx.edu.ittepic.ecommerce.ejbs;
+package mx.edu.ittepic.ecommerce.ejb;
 
 import javax.ejb.Remote;
 
 /**
  *
- * @author ernesto
+ * @author miguel
  */
 @Remote
-public interface CartBeanRemote{
-    public String addProduct(String productid, String productname,String code, String quantity, String image, String unitprice);
-    public String removeProduct(String productid);
+public interface EJBecommerceStatefulRemote {
+    public String addProduct(String productcode, String productname, int productquantity, double productprice, String image);
+    public String removeProduct(String productcode);
     public void remove();
     public void initialize();
+    public String getCart();
     public String login(String username, String password);
     public int getUserid();
     public String getUsername();
-        
 }

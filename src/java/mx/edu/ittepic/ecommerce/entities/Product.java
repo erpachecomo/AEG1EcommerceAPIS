@@ -6,9 +6,12 @@
 package mx.edu.ittepic.ecommerce.entities;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,14 +19,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author ernesto
+ * @author miguel
  */
 @Entity
 @Table(name = "product")
@@ -34,14 +39,17 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Product.findByCode", query = "SELECT p FROM Product p WHERE p.code = :code"),
     @NamedQuery(name = "Product.findByProductname", query = "SELECT p FROM Product p WHERE p.productname = :productname"),
     @NamedQuery(name = "Product.findByBrand", query = "SELECT p FROM Product p WHERE p.brand = :brand"),
+    @NamedQuery(name = "Product.findByPurchprice", query = "SELECT p FROM Product p WHERE p.purchprice = :purchprice"),
     @NamedQuery(name = "Product.findByStock", query = "SELECT p FROM Product p WHERE p.stock = :stock"),
+    @NamedQuery(name = "Product.findBySalepricemin", query = "SELECT p FROM Product p WHERE p.salepricemin = :salepricemin"),
     @NamedQuery(name = "Product.findByReorderpoint", query = "SELECT p FROM Product p WHERE p.reorderpoint = :reorderpoint"),
     @NamedQuery(name = "Product.findByCurrency", query = "SELECT p FROM Product p WHERE p.currency = :currency"),
-    @NamedQuery(name = "Product.findByPurchprice", query = "SELECT p FROM Product p WHERE p.purchprice = :purchprice"),
-    @NamedQuery(name = "Product.findBySalepricemay", query = "SELECT p FROM Product p WHERE p.salepricemay = :salepricemay"),
-    @NamedQuery(name = "Product.findBySalepricemin", query = "SELECT p FROM Product p WHERE p.salepricemin = :salepricemin"),
-    @NamedQuery(name = "Product.findByImage", query = "SELECT p FROM Product p WHERE p.image = :image")})
+    @NamedQuery(name = "Product.findBySalepricemay", query = "SELECT p FROM Product p WHERE p.salepricemay = :salepricemay")})
 public class Product implements Serializable {
+
+    @Size(max = 100)
+    @Column(name = "image")
+    private String image;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -60,8 +68,13 @@ public class Product implements Serializable {
     @Size(min = 1, max = 40)
     @Column(name = "brand")
     private String brand;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Column(name = "purchprice")
+    private Double purchprice;
     @Column(name = "stock")
     private Integer stock;
+    @Column(name = "salepricemin")
+    private Double salepricemin;
     @Basic(optional = false)
     @NotNull
     @Column(name = "reorderpoint")
@@ -71,18 +84,14 @@ public class Product implements Serializable {
     @Size(min = 1, max = 3)
     @Column(name = "currency")
     private String currency;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "purchprice")
-    private Double purchprice;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "salepricemay")
-    private Double salepricemay;
-    @Column(name = "salepricemin")
-    private Double salepricemin;
-    @Size(max = 256)
-    @Column(name = "image")
-    private String image;
+    private double salepricemay;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "productid", fetch = FetchType.LAZY)
+    private List<Salesline> saleslineList;
     @JoinColumn(name = "categoryid", referencedColumnName = "categoryid")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Category categoryid;
 
     public Product() {
@@ -92,11 +101,12 @@ public class Product implements Serializable {
         this.productid = productid;
     }
 
-    public Product(Integer productid, String brand, int reorderpoint, String currency) {
+    public Product(Integer productid, String brand, int reorderpoint, String currency, double salepricemay) {
         this.productid = productid;
         this.brand = brand;
         this.reorderpoint = reorderpoint;
         this.currency = currency;
+        this.salepricemay = salepricemay;
     }
 
     public Integer getProductid() {
@@ -131,12 +141,28 @@ public class Product implements Serializable {
         this.brand = brand;
     }
 
+    public Double getPurchprice() {
+        return purchprice;
+    }
+
+    public void setPurchprice(Double purchprice) {
+        this.purchprice = purchprice;
+    }
+
     public Integer getStock() {
         return stock;
     }
 
     public void setStock(Integer stock) {
         this.stock = stock;
+    }
+
+    public Double getSalepricemin() {
+        return salepricemin;
+    }
+
+    public void setSalepricemin(Double salepricemin) {
+        this.salepricemin = salepricemin;
     }
 
     public int getReorderpoint() {
@@ -155,36 +181,21 @@ public class Product implements Serializable {
         this.currency = currency;
     }
 
-    public Double getPurchprice() {
-        return purchprice;
-    }
-
-    public void setPurchprice(Double purchprice) {
-        this.purchprice = purchprice;
-    }
-
-    public Double getSalepricemay() {
+    public double getSalepricemay() {
         return salepricemay;
     }
 
-    public void setSalepricemay(Double salepricemay) {
+    public void setSalepricemay(double salepricemay) {
         this.salepricemay = salepricemay;
     }
 
-    public Double getSalepricemin() {
-        return salepricemin;
+    @XmlTransient
+    public List<Salesline> getSaleslineList() {
+        return saleslineList;
     }
 
-    public void setSalepricemin(Double salepricemin) {
-        this.salepricemin = salepricemin;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
+    public void setSaleslineList(List<Salesline> saleslineList) {
+        this.saleslineList = saleslineList;
     }
 
     public Category getCategoryid() {
@@ -218,6 +229,14 @@ public class Product implements Serializable {
     @Override
     public String toString() {
         return "mx.edu.ittepic.ecommerce.entities.Product[ productid=" + productid + " ]";
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
     
 }

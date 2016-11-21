@@ -5,11 +5,10 @@
  */
 package mx.edu.ittepic.ecommerce.servlets;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sun.xml.ws.runtime.dev.Session;
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.System.out;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
@@ -19,9 +18,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import mx.edu.ittepic.ecommerce.ejbs.CartBeanRemote;
-import mx.edu.ittepic.ecommerce.entities.Users;
+import mx.edu.ittepic.ecommerce.ejb.EJBecommerceStatefulRemote;
 import mx.edu.ittepic.ecommerce.utils.Message;
+import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  *
@@ -29,6 +28,7 @@ import mx.edu.ittepic.ecommerce.utils.Message;
  */
 @WebServlet(name = "LoginUser", urlPatterns = {"/LoginUser"})
 public class LoginUser extends HttpServlet {
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -54,7 +54,34 @@ public class LoginUser extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        response.setHeader("Cache-Control", "no-store");
+        response.setContentType("application/json;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        
+        EJBecommerceStatefulRemote ejb = (EJBecommerceStatefulRemote) request.getSession().getAttribute("ejbsession");
+        
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String passwordMD5=DigestUtils.md5Hex(password); 
+        
+        if(ejb ==null){
+            InitialContext ic;
+            try{
+                ic = new InitialContext();
+                ejb = (EJBecommerceStatefulRemote) ic.lookup("java:comp/env/ejb/EJBecommerceStateful"); 
+                
+                 Message m = new GsonBuilder().create().fromJson(ejb.login(username, passwordMD5), Message.class);
+                 
+                 if(m.getCode()==200){
+                     request.getSession().setAttribute("ejbsession", ejb);
+                 }
+                 out.print(new GsonBuilder().create().toJson(m));
+            } catch (NamingException ex) {
+                out.print(ex.toString());
+            }
+        }else{
+            response.sendRedirect("index.html");
+        }
     }
 
     /**
@@ -68,45 +95,6 @@ public class LoginUser extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setHeader("Cache-Control", "no-store");
-        response.setContentType("application/json;charset=UTF-8");
-        CartBeanRemote cart;
-        cart = (CartBeanRemote) request.getSession().getAttribute("ejbsession");
-        
-        PrintWriter o = response.getWriter();
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        Message m;
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        
-        if(cart==null){
-            try {
-                //Necesarias para instanciar un ejb desde jndi
-                InitialContext ic = new InitialContext();
-                cart = (CartBeanRemote) ic.lookup("java:comp/env/ejb/CartBean");
-                request.getSession().setAttribute("ejbsession",cart);
-                m = gson.fromJson(cart.login(username, password), Message.class);
-                //System.out.println(m.getCode()+" blablabla "+m.getMsg());
-                if(m.getCode()==200){
-                    request.getSession().setAttribute("ejbsession", cart);
-                    //response.sendRedirect("index.html");
-                }
-                o.print(gson.toJson(m));
-                
-            } catch (NamingException ex) {
-                Logger.getLogger(AddProduct.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }else{
-            response.sendRedirect("login.html");
-            
-        }
-        
-        
-        
-        
-        
-        
     }
 
     /**

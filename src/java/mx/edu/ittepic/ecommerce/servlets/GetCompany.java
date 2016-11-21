@@ -5,8 +5,6 @@
  */
 package mx.edu.ittepic.ecommerce.servlets;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.ejb.EJB;
@@ -15,18 +13,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import mx.edu.ittepic.ecommerce.ejbs.EJBecommerce;
-import mx.edu.ittepic.ecommerce.utils.Message;
+import mx.edu.ittepic.ecommerce.ejb.EJBecommerce;
 
 /**
  *
- * @author ernesto
+ * @author miguel
  */
-@WebServlet(name = "ExistUser", urlPatterns = {"/ExistUser"})
-public class ExistUser extends HttpServlet {
+@WebServlet(name = "GetCompany", urlPatterns = {"/GetCompany"})
+public class GetCompany extends HttpServlet {
     @EJB
-    EJBecommerce ejb;
-
+    private EJBecommerce ejb;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -39,6 +35,9 @@ public class ExistUser extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        response.setHeader("Cache-Control","no-store");
+        PrintWriter out = response.getWriter();
+        out.print(ejb.getCompanies());
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -53,7 +52,7 @@ public class ExistUser extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        processRequest(request, response);
     }
 
     /**
@@ -67,18 +66,7 @@ public class ExistUser extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        PrintWriter p = response.getWriter();
-        String username = request.getParameter("username");
-        String answer = ejb.getUserByUsername(username);
-        Message m = gson.fromJson(answer, Message.class);
-        if(m.getCode()==200)
-            p.write("true");
-        else
-            p.write("false"); 
-        
+        processRequest(request, response);
     }
 
     /**
