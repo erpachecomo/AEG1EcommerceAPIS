@@ -134,10 +134,10 @@ public class Users implements Serializable {
     @Column(name = "apikey")
     private String apikey;
     @JoinColumn(name = "companyid", referencedColumnName = "companyid")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)//Agregar a todas las entidades
+    @ManyToOne(optional = false)//, fetch = FetchType.LAZY)//Agregar a todas las entidades
     private Company companyid;
     @JoinColumn(name = "roleid", referencedColumnName = "roleid")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     private Role roleid;
 
     public Users() {
