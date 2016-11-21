@@ -1,13 +1,12 @@
 
 $(function () {
     $.ajax({
-        url: 'GetProducts',
+        url: 'webresources/product/listProducts',
         type: 'GET',
-        async: false
-                //,
-                // dataType: 'json'
+        async: false, 
+        dataType: 'json'
     }).done(function (json1) {
-        //console.log("json:"+json1);
+        console.log("json1:"+json1);
         $.each($.parseJSON(json1.msg), function (i, msg) {
             $('<li></li>').attr("id", "li-item" + i).appendTo('#gallery');
             $('<div></div>').attr("id", "div-item" + i).attr("class", "cd-single-item").appendTo('#li-item' + i);

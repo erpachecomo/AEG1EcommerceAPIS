@@ -6,7 +6,7 @@ $(function () {
             url: "//cdn.datatables.net/plug-ins/1.10.12/i18n/Spanish.json"
         },
         ajax: {
-            url: "GetProducts",
+            url: "webresources/product/listProducts",
             dataSrc: function (json) {
                 return $.parseJSON(json["msg"]);
             }

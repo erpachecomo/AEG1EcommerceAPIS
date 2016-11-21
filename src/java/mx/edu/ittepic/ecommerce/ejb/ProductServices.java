@@ -14,8 +14,12 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
+import javax.persistence.LockTimeoutException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
+import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
+import javax.persistence.QueryTimeoutException;
 import javax.persistence.TransactionRequiredException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -26,6 +30,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import mx.edu.ittepic.ecommerce.entities.Login;
+import mx.edu.ittepic.ecommerce.entities.Product;
 import mx.edu.ittepic.ecommerce.entities.Role;
 import mx.edu.ittepic.ecommerce.entities.UpdatePassword;
 import mx.edu.ittepic.ecommerce.entities.Users;
@@ -39,23 +44,75 @@ import org.apache.commons.codec.digest.DigestUtils;
 @Stateless
 @Path("/product")
 public class ProductServices {
-     @PersistenceContext
-     private EntityManager entity;
+
+    @PersistenceContext
+    private EntityManager entity;
+
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     @GET
     @Path("/list")
     @Produces({MediaType.TEXT_PLAIN})
-    public String getRoles(){
+    public String getRoles() {
         List<Role> role = new ArrayList<>();
         Query q = entity.createNamedQuery("Role.findAll");
         role = q.getResultList();
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        
+
         return gson.toJson(role);
     }
-    
+
+    @GET
+    @Path("/listProducts")
+    @Produces({MediaType.TEXT_PLAIN})
+    public String getProducts() {
+        List<Product> products;
+        Message msg = new Message();
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        try {
+            Query q = entity.createNamedQuery("Product.findAll");
+
+            products = q.getResultList();
+            for (Product p : products) {
+                p.getCategoryid().setProductList(null);
+            }
+            msg.setCode(200);
+            msg.setMsg(gson.toJson(products));
+            msg.setDetail("OK");
+        } catch (IllegalArgumentException e) {
+            msg.setCode(422);
+            msg.setMsg("Error de entidad, el producto no es una entidad.");
+            msg.setDetail(e.toString());
+        } catch (IllegalStateException e) {
+            msg.setCode(422);
+            msg.setMsg("Error de entidad, el producto no es una entidad o ha sido removido.");
+            msg.setDetail(e.toString());
+        } catch (QueryTimeoutException e) {
+            msg.setCode(509);
+            msg.setMsg("La operación tardo demasiado, por favor vuelve a intentarlo.");
+            msg.setDetail(e.toString());
+        } catch (TransactionRequiredException e) {
+            msg.setCode(509);
+            msg.setMsg("La operación tardo demasiado, por favor vuelve a intentarlo.");
+            msg.setDetail(e.toString());
+        } catch (PessimisticLockException e) {
+            msg.setCode(400);
+            msg.setMsg("Error, operación bloqueada (Pesimistic), no se realizo la transacción.");
+            msg.setDetail(e.toString());
+        } catch (LockTimeoutException e) {
+            msg.setCode(400);
+            msg.setMsg("Error, operación bloqueada (Lock), no se realizo la transacción.");
+            msg.setDetail(e.toString());
+        } catch (PersistenceException e) {
+            msg.setCode(400);
+            msg.setMsg("Error, operación bloqueada (Persistence), no se realizo la transacción.");
+            msg.setDetail(e.toString());
+        }
+        return gson.toJson(msg);
+    }
+
     @POST
     @Path("/prueba")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -70,7 +127,6 @@ public class ProductServices {
         m.setDetail("OK");
         return m;
     }
-    
     @GET
     @Path("/login")
     @Consumes({MediaType.TEXT_PLAIN})
