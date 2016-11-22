@@ -9,11 +9,12 @@ import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -26,27 +27,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Productcart.findAll", query = "SELECT p FROM Productcart p"),
-    @NamedQuery(name = "Productcart.findByProductid", query = "SELECT p FROM Productcart p WHERE p.productid = :productid"),
     @NamedQuery(name = "Productcart.findByProductname", query = "SELECT p FROM Productcart p WHERE p.productname = :productname"),
     @NamedQuery(name = "Productcart.findByProductprice", query = "SELECT p FROM Productcart p WHERE p.productprice = :productprice"),
+    @NamedQuery(name = "Productcart.findByProductimage", query = "SELECT p FROM Productcart p WHERE p.productimage = :productimage"),
+    @NamedQuery(name = "Productcart.findByProductcode", query = "SELECT p FROM Productcart p WHERE p.productcode = :productcode"),
     @NamedQuery(name = "Productcart.findByUserid", query = "SELECT p FROM Productcart p WHERE p.userid = :userid"),
-    @NamedQuery(name = "Productcart.findByProductimage", query = "SELECT p FROM Productcart p WHERE p.productimage = :productimage")})
+    @NamedQuery(name = "Productcart.findByQuantity", query = "SELECT p FROM Productcart p WHERE p.quantity = :quantity"),
+    @NamedQuery(name = "Productcart.findByProductcartid", query = "SELECT p FROM Productcart p WHERE p.productcartid = :productcartid"),
+    @NamedQuery(name = "Productcart.findByProductid", query = "SELECT p FROM Productcart p WHERE p.productid = :productid")})
 public class Productcart implements Serializable {
 
-    @Size(max = 255)
-    @Column(name = "productcode")
-    private String productcode;
-    @Column(name = "userid")
-    private Integer userid;
-    @Column(name = "quantity")
-    private Integer quantity;
-
     private static final long serialVersionUID = 1L;
-    @Id
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "productid")
-    private Integer productid;
     @Size(max = 255)
     @Column(name = "productname")
     private String productname;
@@ -56,20 +47,26 @@ public class Productcart implements Serializable {
     @Size(max = 255)
     @Column(name = "productimage")
     private String productimage;
+    @Size(max = 255)
+    @Column(name = "productcode")
+    private String productcode;
+    @Column(name = "userid")
+    private Integer userid;
+    @Column(name = "quantity")
+    private Integer quantity;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "productcartid")
+    private Integer productcartid;
+    @Column(name = "productid")
+    private Integer productid;
 
     public Productcart() {
     }
 
-    public Productcart(Integer productid) {
-        this.productid = productid;
-    }
-
-    public Integer getProductid() {
-        return productid;
-    }
-
-    public void setProductid(Integer productid) {
-        this.productid = productid;
+    public Productcart(Integer productcartid) {
+        this.productcartid = productcartid;
     }
 
     public String getProductname() {
@@ -96,31 +93,6 @@ public class Productcart implements Serializable {
         this.productimage = productimage;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (productid != null ? productid.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Productcart)) {
-            return false;
-        }
-        Productcart other = (Productcart) object;
-        if ((this.productid == null && other.productid != null) || (this.productid != null && !this.productid.equals(other.productid))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "mx.edu.ittepic.ecommerce.entities.Productcart[ productid=" + productid + " ]";
-    }
-
     public String getProductcode() {
         return productcode;
     }
@@ -143,6 +115,47 @@ public class Productcart implements Serializable {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Integer getProductcartid() {
+        return productcartid;
+    }
+
+    public void setProductcartid(Integer productcartid) {
+        this.productcartid = productcartid;
+    }
+
+    public Integer getProductid() {
+        return productid;
+    }
+
+    public void setProductid(Integer productid) {
+        this.productid = productid;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (productcartid != null ? productcartid.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Productcart)) {
+            return false;
+        }
+        Productcart other = (Productcart) object;
+        if ((this.productcartid == null && other.productcartid != null) || (this.productcartid != null && !this.productcartid.equals(other.productcartid))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "mx.edu.ittepic.ecommerce.entities.Productcart[ productcartid=" + productcartid + " ]";
     }
     
 }

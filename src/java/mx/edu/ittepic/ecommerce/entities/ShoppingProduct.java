@@ -73,6 +73,7 @@ public class ShoppingProduct {
     public void setProductid(String productid) {
         this.productid = productid;
     }
+
     
 
     }

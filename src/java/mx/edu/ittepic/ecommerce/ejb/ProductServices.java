@@ -147,16 +147,55 @@ public class ProductServices {
     @Path("/addProductToCart")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Productcart addProductToCart(ShoppingProduct param) {
-
+    public String addProductToCart(ShoppingProduct param) {
+        
+        List<Productcart> productosusuario=new ArrayList<>();
         Productcart product;
         GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        
+        Gson gson = builder.create();        
+        int a;
+        a=0;
         try {
-            Query q = entity.createNamedQuery("Productcart.findByUserid").setParameter("userid", param.getUserid());
-            product = (Productcart)q.getSingleResult();
-            product.setQuantity(product.getQuantity()+Integer.parseInt(param.getProductquantity()));
+            Query q = entity.createNamedQuery("Productcart.findByUserid").setParameter("userid", Integer.parseInt(param.getUserid()));
+            productosusuario =q.getResultList();
+            a=q.getResultList().size();
+            
+            if(a==0){
+                product = new Productcart();
+                product.setProductid(Integer.parseInt(param.getProductid()));
+                product.setProductimage(param.getProductimage());
+                product.setProductname(param.getProductname());
+                product.setProductprice(Double.parseDouble(param.getProductprice()));
+                product.setQuantity(Integer.parseInt(param.getProductquantity()));
+                product.setUserid(Integer.parseInt(param.getUserid()));
+                product.setProductcode(param.getProductcode());
+                entity.merge(product);
+                productosusuario =q.getResultList();
+            }else{            
+                for(Productcart p: productosusuario){
+                    
+                    
+                    if(p.getProductid().toString().equals(param.getProductid())){
+                        p.setQuantity(p.getQuantity()+Integer.parseInt(param.getProductquantity()));
+                        entity.merge(p);
+                        productosusuario =q.getResultList();
+                        return gson.toJson(productosusuario);
+                    }
+                }
+                product = new Productcart();
+                product.setProductid(Integer.parseInt(param.getProductid()));
+                product.setProductimage(param.getProductimage());
+                product.setProductname(param.getProductname());
+                product.setProductprice(Double.parseDouble(param.getProductprice()));
+                product.setQuantity(Integer.parseInt(param.getProductquantity()));
+                product.setUserid(Integer.parseInt(param.getUserid()));
+                product.setProductcode(param.getProductcode());
+                entity.persist(product);
+                entity.flush();
+                productosusuario =q.getResultList();
+                return gson.toJson(productosusuario);
+            }
+            
 
         } catch (NoResultException e) {
             product = new Productcart();
@@ -167,10 +206,52 @@ public class ProductServices {
             product.setQuantity(Integer.parseInt(param.getProductquantity()));
             product.setUserid(Integer.parseInt(param.getUserid()));
             product.setProductcode(param.getProductcode());
+            entity.merge(product);
 
         }
-        return product;
+                                
+        return gson.toJson(productosusuario);
     }
+    
+    
+    /*
+    @POST
+    @Path("/addProductToCart")
+    @Consumes({MediaType.TEXT_PLAIN})
+    @Produces({MediaType.TEXT_PLAIN})
+    public String addProductToCart(
+            @QueryParam("productid") String productid,
+            @QueryParam("productimage") String productimage,
+            @QueryParam("productname") String productname,
+            @QueryParam("userid") String userid, 
+            @QueryParam("productprice") String productprice, 
+            @QueryParam("productquantity") String productquantity, 
+            @QueryParam("productcode") String productcode) {
+        Productcart product;
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+
+        try {
+            Query q = entity.createNamedQuery("Productcart.findByUserid").setParameter("userid", Integer.parseInt(userid));
+            product = (Productcart) q.getSingleResult();
+            product.setQuantity(product.getQuantity() + Integer.parseInt(productquantity));
+
+        } catch (NoResultException e) {
+            product = new Productcart();
+            product.setProductid(Integer.parseInt(productid));
+            product.setProductimage(productimage);
+            product.setProductname(productname);
+            product.setProductprice(Double.parseDouble(productprice));
+            product.setQuantity(Integer.parseInt(productquantity));
+            product.setUserid(Integer.parseInt(userid));
+            product.setProductcode(productcode);
+
+        }
+        return "holi";
+
+    }*/
+ 
+    
     @GET
     @Path("/login")
     @Consumes({MediaType.TEXT_PLAIN})

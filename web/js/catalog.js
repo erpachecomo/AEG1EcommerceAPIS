@@ -22,7 +22,8 @@ $(function () {
             //$('<span></span>').attr("id", "span-icon" + i).attr("class", "input-group-addon").appendTo('#div-input-group' + i);
             //$('<i></i>').attr("class", "glyphicon glyphicon-plus").appendTo('#span-icon' + i);
             $('<input>').attr("class", "form-control").attr("min", '1').attr("max", "'" + msg.stock + "'").attr("type", "number").attr("id", "quantity" + i).attr("name", "quantity" + i).attr("placeholder", "Cantidad").appendTo('#div-input-group' + i);
-            //console.log("addToCart("+msg.productid+",$('#quantity" + i+"').val())");
+            //console.log("
+            //oCart("+msg.productid+",$('#quantity" + i+"').val())");
             
             $('<button></button>')
                     .attr("onclick", "addToCart('"+msg.productname+"','"+msg.code+"','"+msg.productid+"','"+msg.salepricemin+"','"+msg.image+"','" +i + "',"+"'button-cart" + i+"','3')")
@@ -95,21 +96,13 @@ function addToCart(productname, code, productid, salepricemin, image, quantity, 
         });
     }
     var data =
-            {
-                "productname": productname,
-                "productcode": code,
-                "productid": productid,
-                "productquantity": $("#quantity"+quantity).val(),
-                "productprice": salepricemin,
-                "productimage": image,
-                "userid":userid
-
-            };
+            '{"productname":"'+ productname+'","productcode":"'+ code+'","productid":"'+productid+'","productquantity":"'+ $("#quantity"+quantity).val()+'", "productprice":"'+ salepricemin+'","productimage":"'+ image+'","userid":"'+userid +'"}';
     console.log(data);
             
     $.ajax({
         url: 'webresources/product/addProductToCart',
         type: 'POST',
+        contentType: 'application/json',
         dataType: 'json',
         data: data
     }).done(function (json) {
@@ -130,11 +123,11 @@ function updateCart(json) {
     $.each(json, function (i, msg) {
         
         var addtoCart = $('.cd-cart-items');
-        var $item = $('<li> <span class="cd-qty">' + msg.productquantity + ' </span>' + msg.productname + ' \n\
-                            <div class="cd-price"> $' + msg.productquantity * msg.productprice + ' </div> \n\
+        var $item = $('<li> <span class="cd-qty">' + msg.quantity + ' </span>' + msg.productname + ' \n\
+                            <div class="cd-price"> $' + msg.quantity * msg.productprice + ' </div> \n\
                             <a class="cd-item-remove cd-img-replace" onclick="removeCart(\''+msg.productcode+'\')" > Remove </a></li>');
         $($item).attr('id', 'li-cart').appendTo('#lista-cart');
-        $total = $total + (msg.productquantity * msg.productprice);
+        $total = $total + (msg.quantity * msg.productprice);
     });
     $total = $('<p>Total<span id="totalSale">'+$total+'</span></p>');
     $($total).appendTo('.cd-cart-total');
@@ -142,7 +135,7 @@ function updateCart(json) {
 }
 
 function removeCart(code){
-    var data = {
+    /*var data = {
         "code": code
     }; 
         console.log("khastapasanda1!"+code);
@@ -154,7 +147,7 @@ function removeCart(code){
     }).done(function (json) {
         console.log("khastapasanda!"+json);
         updateCart(json);
-    });
+    });*/
 }
 
 function newSale(){
