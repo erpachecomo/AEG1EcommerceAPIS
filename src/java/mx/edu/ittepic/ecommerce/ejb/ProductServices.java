@@ -10,17 +10,11 @@ import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.Resource;
-import javax.ejb.ApplicationException;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
 import javax.persistence.LockTimeoutException;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -58,11 +52,8 @@ import org.apache.commons.codec.digest.DigestUtils;
  */
 @Stateless
 @Path("/product")
-@TransactionManagement(TransactionManagementType.CONTAINER)
 public class ProductServices {
 
-    @Resource
-    private SessionContext context;
     @PersistenceContext
     private EntityManager entity;
 
@@ -159,7 +150,6 @@ public class ProductServices {
     @Path("/newSale")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public String newSale(Checkout checkout) {
         Message m = new Message();
         Sale s = new Sale();
@@ -200,7 +190,6 @@ public class ProductServices {
                     m.setCode(400);
                     m.setMsg("Error rollback");
                     m.setDetail("El stock es menor a lo pedido");
-                    return gson.toJson(m);
 
                 }
                 q = entity.createNativeQuery("UPDATE product SET stock = " + stock + " WHERE productid = " + producti.getProductid());
@@ -242,7 +231,7 @@ public class ProductServices {
             m.setMsg("El sale introducido no existe, no se puede actualizar.");
             m.setDetail(e.toString());
         }
-        entity.close();
+        //entity.close();
         return gson.toJson(m);
     }
 
@@ -462,10 +451,5 @@ public class ProductServices {
         }
         return m;
 
-    }
-    
-    @ApplicationException(rollback=true)
-    public class StockException extends Exception{
-    
     }
 }
