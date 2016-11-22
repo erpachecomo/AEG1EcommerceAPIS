@@ -1,476 +1,208 @@
-$(function () {
-    $.validator.addMethod("phone", function (value, element) {
-        var re = new RegExp(/^\+?[1-9]\d{1,14}$/);
-        return this.optional(element) || re.test(value);
-    }, "Telefono invalido: Por favor verificalo.");
-    $.validator.addMethod("RFC", function (value, element) {
-        var re = new RegExp(/^([A-Z,Ñ]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[A-Z|\d]{3})$/);
-        return this.optional(element) || re.test(value);
-    }, "RFC invalido: Por favor verificalo.");
-    $('#frmCompany').validate({
-        rules: {
-            companyname: {
-                maxlength: 40,
-                required: true
-            },
-            companyneighborhood: {
-                maxlength: 50,
-                required: true
-            },
-            companyzipcode: {
-                maxlength: 10,
-                number: true,
-                required: true
-            },
-            companycity: {
-                maxlength: 50,
-                required: true
-            },
-            companycountry: {
-                required: true
-
-            },
-            companystate: {
-                maxlength: 50,
-                required: true
-            },
-            companyregion: {
-                maxlength: 50,
-                required: true
-            },
-            companystreet: {
-                maxlength: 50,
-                required: true
-            },
-            companystreetnumber: {
-                maxlength: 7,
-                number: true,
-                required: true
-            },
-            companyphone: {
-                maxlength: 15,
-                phone: true,
-                required: true
-            },
-            companyrfc: {
-                maxlength: 13,
-                required: true,
-                RFC:true
-            },
-            companylogo: {
-                maxlength: 255,
-                url: true
-            }
-        },
-        messages: {
-            companyname: {
-                maxlength: "Introduzca maximo 40 caracteres",
-                required: "Capture el nombre de la categoria"
-            },
-            companyneighborhood: {
-                maxlength: "Introduzca maximo 50 caracteres",
-                required: "Capture la colonia de la categoria"
-            },
-            companyzipcode: {
-                maxlength: "Introduzca maximo 10 caracteres",
-                number: "Introduzca un numero",
-                required: "Capture el codigo postal de la categoria"
-            },
-            companycity: {
-                maxlength: "Introduzca maximo 50 caracteres",
-                required: "Capture la ciudad de la categoria"
-            },
-            companycountry: {
-                required: "Elija un pais"
-
-            },
-            companystate: {
-                maxlength: "Introduzca maximo 50 caracteres",
-                required: "Capture el estado de la categoria"
-            },
-            companyregion: {
-                maxlength: "Introduzca maximo 50 caracteres",
-                required: "Capture la region de la categoria"
-            },
-            companystreet: {
-                maxlength: "Introduzca maximo 50 caracteres",
-                required: "Capture la calle de la categoria"
-            },
-            companystreetnumber: {
-                maxlength: "Introduzca maximo 7 caracteres",
-                number: "Introduzca un numero",
-                required: "Capture el numero de local de la categoria"
-            },
-            companyphone: {
-                maxlength: "Introduzca maximo 15 caracteres",
-                number: "Introduzca un numero",
-                required: "Capture el numero de telefono de la categoria"
-            },
-            companyrfc: {
-                maxlength: "Introduzca maximo 13 caracteres",
-                required: "Capture el RFC de la categoria"
-            },
-            companylogo: {
-                maxlength: "Introduzca maximo 255 caracteres",
-                required: "Inserte un logo"
-            }
-        },
-        highlight: function (element) {
-            $(element).closest('.input-group').addClass('has-error');
-        },
-        unhighlight: function (element) {
-            $(element).closest('.input-group').removeClass('has-error');
-        },
-        errorElement: 'span',
-        errorClass: 'help-block',
-        errorPlacement: function (error, element) {
-            if (element.parent('.input-group').length) {
-                error.insertAfter(element.parent());
-            } else {
-                error.insertAfter(element);
-            }
-        },
-        submitHandler: function (form) {
-            newCompany($('#companyname').val(), $('#companyneighborhood').val(), $('#companyzipcode').val(), $('#companycity').val(), $('#companycountry').val(), $('#companystate').val(), $('#companyregion').val()
-                    , $('#companystreet').val(), $('#companystreetnumber').val(), $('#companyphone').val(), $('#companyrfc').val(), $('#companylogo').val());
-            return false;
-        }
-    });
+/* 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+$(function (){
     $('#tbCompany').DataTable({
-        ajax: {
-            url: 'GetCompanyAll',
-            type: 'GET',
-            dataSrc: function (json) {
-                console.log(json.msg);
-                return $.parseJSON(json.msg);
-            },
+        language: {
+            url: "http://cdn.datatables.net/plug-ins/1.10.12/i18n/Spanish.json"
         },
-        responsive: true,
-        columns: [
-            {data: 'companyid'
-            },
-            {data: 'companyname'
-            },
-            {data: 'neighborhood'
-            },
-            {data: 'zipcode'
-            },
-            {data: 'city'
-            },
-            {data: 'country'
-            },
-            {data: 'state'
-            },
-            {data: 'region'
-            },
-            {data: 'street'
-            },
-            {data: 'streetnumber'
-            },
-            {data: 'phone'
-            },
-            {data: 'rfc'
-            },
-            {data: 'logo'
-            },
-            {data: function (row) {
+        ajax: {
+            url: "GetCompany",
+            dataSrc: function (json) {
 
-                    //console.log(row);
-                    str = " <div align='center'>"
-                    str += "<button id='btnEliminarCompany' class='btn btn-danger btn-xs' onClick='deleteCompany(" + row['companyid'] + ")'><i class='glyphicon glyphicon-trash'></i> Eliminar </button>";
-                    str += "&nbsp;<button id='btnEditarCompany' class = 'btn btn-success btn-xs' onClick='showCompany(" + row['companyid'] + ",\"" + row['companyname'] + "\",\"" + row['rfc'] + "\",\"" + row['neighborhood'] + "\"," + row['zipcode'] + ",\"" + row['city'] + "\",\"" + row['country'] + "\",\"" + row['state'] + "\",\"" + row['region'] + "\",\"" + row['street'] + "\"," + row['streetnumber'] + "," + row['phone'] + ",\"" + row['logo'] + "\")'><i class='glyphicon glyphicon-edit'></i> Modificar </button>";
-                    str += "</div";
+                return $.parseJSON(json['msg']);
+            }
+        },
+        columns: [
+            {
+                data: function (row) {
+                    str = "<div align='right'>";
+                    //str+= accounting.formatMoney( row["roleid"] );
+                    //otra opcion
+                    str += numeral(row["companyid"]).format('$0,0.00');
+                    str += "</div>";
+                    return str;
+                }
+            },
+            {
+                data: "companyname"
+            },
+            {
+                data: "neighborhood"
+            },
+            {
+                data: "zipcode"
+            },
+            {
+                data: "city"
+            },
+            {
+                data: "country"
+            },
+            {
+                data: "state"
+            },
+            {
+                data: "region"
+            },
+            {
+                data: "street"
+            },
+            {
+                data: "streetnumber"
+            },
+            {
+                data: "phone"
+            },
+            {
+                data: "rfc"
+            },
+            {
+                data: "logo"
+            },
+            {
+                data: function (row) {
+                    str = "<div align='center'>";
+                    str += "<button id='btnBorrar' class='btn btn-danger btn-xs' onclick='deleteRole(" + row["roleid"] + ")'><i class='glyphicon glyphicon-trash'></i></button>";
+                    str += "&nbsp;<button id='btnEditar' class = 'btn btn-success btn-xs' onClick = 'showRole(" + row['roleid'] + ",\"" + row['rolename'] + "\")'><i class='glyphicon glyphicon-edit'></i></button>";
+                    str += "<div>";
                     return str;
                 }
             }
         ]
-    });
-    $('#frmEditCompany').validate({
-        rules: {
-            companyname2: {
-                maxlength: 40,
-                required: true
-            },
-            companycity2: {
-                maxlength: 50,
-                required: true
-            },
-            companycountry2: {
-                maxlength: 50,
-                required: true
-            },
-            companyneighborhood2: {
-                maxlength: 50,
-                required: true
-            },
-            companyzipcode2: {
-                maxlength: 10,
-                number: true,
-                required: true
-            },
-            companystate2: {
-                maxlength: 50,
-                required: true
-            },
-            companyregion2: {
-                maxlength: 50,
-                required: true
-            },
-            companystreet2: {
-                maxlength: 50,
-                required: true
-            },
-            companystreetnumber2: {
-                maxlength: 7,
-                number: true,
-                required: true
-            },
-            companyphone2: {
-                maxlength: 15,
-                number: true,
-                required: true
-            },
-            companyrfc2: {
-                maxlength: 13,
-                required: true
-            },
-            companylogo2: {
-                maxlength: 255,
-                required: true
-            }
-        },
-        messages: {
-            companyname2: {
-                maxlength: "Introduzca maximo 40 caracteres",
-                required: "Capture el nombre"
-            },
-            companycity2: {
-                maxlength: "Introduzca maximo 50 caracteres",
-                required: "Capture la ciudad"
-            },
-            companycountry2: {
-                maxlength: "Introduzca maximo 50 caracteres",
-                required: "Capture el pais"
-            },
-            companyneighborhood2: {
-                maxlength: "Introduzca maximo 50 caracteres",
-                required: "Capture la colonia"
-            },
-            companyzipcode2: {
-                maxlength: "Introduzca maximo 10 caracteres",
-                number: "Inserte solo numeros",
-                required: "Capture el codigo postal"
-            },
-            companystate2: {
-                maxlength: "Introduzca maximo 50 caracteres",
-                required: "Capture el estado"
-            },
-            companyregion2: {
-                maxlength: "Introduzca maximo 50 caracteres",
-                required: "Capture la region"
-            },
-            companystreet2: {
-                maxlength: "Introduzca maximo 50 caracteres",
-                required: "Capture la calle"
-            },
-            companystreetnumber2: {
-                maxlength: "Introduzca maximo 7 caracteres",
-                number: "Inserte solo numeros",
-                required: "Capture el numero de la calle"
-            },
-            companyphone2: {
-                maxlength: "Introduzca maximo 15 caracteres",
-                number: "Inserte solo numeros",
-                required: "Capture el telefono"
-            },
-            companyrfc2: {
-                maxlength: "Introduzca maximo 13 caracteres",
-                required: "Capture el RFC"
-            },
-            companylogo2: {
-                maxlength: "Introduzca maximo 255 caracteres",
-                required: "Capture el logo"
-            }
-        },
-        highlight: function (element) {
-            $(element).closest('.input-group').addClass('has-error');
-        },
-        unhighlight: function (element) {
-            $(element).closest('.input-group').removeClass('has-error');
-        },
-        errorElement: 'span',
-        errorClass: 'help-block',
-        errorPlacement: function (error, element) {
-            if (element.parent('.input-group').length) {
-                error.insertAfter(element.parent());
-            } else {
-                error.insertAfter(element);
-            }
-        },
-        submitHandler: function (form) {
-            console.log("ID" + $('#companyid').val());
-            updateCompany($('#companyid').val(), $('#companyname2').val(), $('#companycity2').val(), $('#companycountry2').val(), $('#companyneighborhood2').val(), $('#companyzipcodey2').val(),
-                    $('#companystate2').val(), $('#companyregion2').val(), $('#companystreet2').val(), $('#companystreetnumber2').val(), $('#companyphone2').val(), $('#companyrfc2').val(), $('#companylogo2').val());
-            return false;
-        }
-    });
-    $('#btnModificarCompany').on('click', function () {
-        $('#frmEditCompany').submit();
-    });
 
-    $('#companycountry').selectpicker({});
+
+    });
 });
-function newCompany(nombre, neigh, zipcode, city, country, state, region, street, streetnumber, phone, rfc, logo) {
-    //Tres partes en las que se divide la peticion AJAX
-    $.ajax({
-        url: "NewCompany",
-        type: "post",
-        data: {
-            CompanyName: nombre,
-            neighborhood: neigh,
-            zipcode: zipcode,
-            city: city,
-            country: country,
-            state: state,
-            region: region,
-            street: street,
-            streetnumber: streetnumber,
-            phone: phone,
-            rfc: rfc,
-            logo: logo
+
+
+
+function newCompany(){
+     $.ajax(
+        {
+         url: "NewCompany",
+         type:"post",
+         data: $('#frmCompany').serialize()     
         }
-    }).done(function (json) {
-        if (json.code === 200) {
-            $('#tbCompany').dataTable().api().ajax.reload();
-            $('#companycity').val('');
-            $('#companylogo').val('');
-            $('#companynamey').val('');
-            $('#companyneighborhood').val('');
-            $('#companyphone').val('');
-            $('#companyregion').val('');
-            $('#companyrfc').val('');
-            $('#companystate').val('');
-            $('#companystreet').val('');
-            $('#companystreetnumber').val('');
-            $('#companyzipcode').val('');
-            $.growl.notice({
-                message: json.msg
-            });
-        } else {
-            $.growl.error({message: json.msg});
+     ).done(
+        function(data){
+            //alert("Se realizó correctamente "+data.code);            
+            if(data.code==200){
+                
+                $.growl.notice({message: data.msg});
+                $('#tbCompany').dataTable().api().ajax.reload();
+                //$('#rolename').val('');
+                //$('#rolename').val('');
+            }
+            else{
+                $.growl.error({message: data.msg});
+            }
         }
-    }).fail();
+     ).fail(
+        function(){
+           $.growl.error({message: "El servidor no está disponible 😞"}); 
+       }
+     );
 }
-function showCompany(companyid, companyname, rfc, neigh, zipcode, city, country, state, region, street, streetnumber, phone, logo) {
-    console.log("Entro showCompany");
-    console.log(companyid, companyname, rfc, neigh, zipcode, city, country, state, region, street, streetnumber, phone, logo);
-    $('#companyid').val(companyid);
-    $('#companyname2').val(companyname);
-    $('#companyrfc2').val(rfc);
-    $('#companycity2').val(city);
-    $('#companycountry2').val(country);
-    $('#companylogo2').val(logo);
-    $('#companyneighborhood2').val(neigh);
-    $('#companyphone2').val(phone);
-    $('#companyregion2').val(region);
-    $('#companystate2').val(state);
-    $('#companystreet2').val(street);
-    $('#companystreetnumber2').val(streetnumber);
-    $('#companyzipcodey2').val(zipcode);
-    $('#modalCompany').modal('show');
+
+/*function deleteRole(roleid){
+     $.ajax(
+        {
+         url: "DeleteRole",
+         type:"post",
+         data: roleid     
+        }
+     ).done(
+        function(data){
+            //alert("Se realizó correctamente "+data.code);            
+            if(data.code==200){
+                
+                $.growl.notice({message: data.msg});
+                $('#tbRoles').dataTable().api().ajax.reload();
+            }
+            else{
+                $.growl.error({message: data.msg});
+            }
+        }
+     ).fail(
+        function(){
+           $.growl.error({message: "El servidor no está disponible 😞"}); 
+       }
+     );
+}*/
+function deleteCompany(id) {
+    swal({title: "¿Estás seguro que deseas eliminar?",
+        text: "No podrás recuperar la información después de borrarla.",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Sí, eliminar",
+        closeOnConfirm: false},
+            function () {
+                $.ajax(
+                        {
+                            url: "DeleteCompany",
+                            type: "post",
+                            data: {companyid: id}
+                        }
+                ).done(
+                        function (data) {
+                            if (data.code === 200) {
+                                //$.growl.notice({title: "Successful", message: data.msg });
+                                swal("Eliminado", data.msg, "success");
+                                $('#tbCompany').dataTable().api().ajax.reload();
+                                //$('#rolename').val('');
+                            } else {
+                                $.growl.error({message: data.msg});
+                            }
+                        }
+                ).fail(
+                        function (data) {
+                            //$.growl.notice({message: "Algo va mal"});
+                            swal({title: "Error", text: "Algo va mal, no se pudo eliminar", type: "error", confirmButtonText: "Cerrar"});
+                        }
+                );
+
+            }
+    );
+
 }
-function updateCompany(companyid, companyname, city, country, neigh, zipcode, state, region, street, streetnumber, phone, rfc, logo) {
-    //Tres partes en las que se divide la peticion AJAX
-    swal(
+
+function showRole(roleid, rolename) {
+    $('#roleid').val(roleid);
+    $('#rolename2').val(rolename);
+    $('#modalRole').modal("show");
+
+}
+function updateRole() {
+    $.ajax(
             {
-                title: "¿Estas seguro que deseas actualizar esta compañia?", text: "",
-                type: "warning", showCancelButton: true,
-                confirmButtonColor: "#DD6B55", confirmButtonText: "Aceptar!",
-                cancelButtonText: "Cancelar", closeOnConfirm: false,
-                closeOnCancel: false
-            }, function (isConfirm) {
-        if (isConfirm) {
-
-
-            $.ajax({
                 url: "UpdateCompany",
                 type: "post",
                 data: {
-                    companyid: companyid,
-                    companyname: companyname,
-                    city: city,
-                    country: country,
-                    neigh: neigh,
-                    zipcode: zipcode,
-                    state: state,
-                    region: region,
-                    street: street,
-                    streetnumber: streetnumber,
-                    phone: phone,
-                    rfc: rfc,
-                    logo: logo
+                    roleid: $('#roleid').val(),
+                    rolename: $('#rolename2').val()
                 }
-            }).done(function (json) {
-
-                if (json.code === 200) {
-                    swal("Actualizado!", "El registro se Actualizo correctamente", "success");
+            }
+    ).done(
+            function (data) {
+                //alert("Se realizó correctamente "+data.code);            
+                if (data.code == 200) {
+                    $.growl.notice({message: data.msg});
                     $('#tbCompany').dataTable().api().ajax.reload();
-                    $('#companyname2').val('');
-                    $('#companyid').val('');
-                    $('#modalCompany').modal('hide');
-                    $.growl.notice({
-                        message: json.msg
-                    });
-
+                    $('#modalRole').modal("toggle");
                 } else {
-                    $.growl.error({message: json.msg + "" + json.details});
+                    $.growl.error({message: data.msg});
                 }
-            }).fail(
-                    function () {
-                        $.growl.error({message: "Algo va mal no se encuentra el servidor"})
-                    }
-            );
-        } else {
-            swal("Cancelado", "Accion Cancelada", "error");
-        }
-    });
+            }
+    ).fail(
+            function () {
+                $.growl.error({message: "El servidor no está disponible :("});
+            }
+    );
 }
 
-function deleteCompany(companyid) {
-    swal(
-            {
-                title: "¿Estas seguro que deseas eliminar esta compañia?", text: "",
-                type: "warning", showCancelButton: true,
-                confirmButtonColor: "#DD6B55", confirmButtonText: "Aceptar!",
-                cancelButtonText: "Cancelar", closeOnConfirm: false,
-                closeOnCancel: false
-            }, function (isConfirm) {
-        if (isConfirm) {
 
-            $.ajax({
-                url: "DeleteCompany",
-                type: "post",
-                data: {
-                    companyid: companyid
-                }
-            }).done(function (json) {
-                if (json.code === 200) {
-                    swal("Eliminado!", "El registro se elimino correctamente", "success");
-                    $('#tbCompany').dataTable().api().ajax.reload();
-                    $.growl.notice({
-                        message: "Eliminado con éxito"
-                    });
-                } else {
-                    $.growl.error({message: "No se pudo eliminar."});
-                }
-            }).fail(
-                    function () {
-                        $.growl.error({message: "Algo va mal no se encuentra el servidor"})
-                    }
-            );
-        } else {
-            swal("Cancelado", "Accion Cancelada", "error");
-        }
-    });
 
-}

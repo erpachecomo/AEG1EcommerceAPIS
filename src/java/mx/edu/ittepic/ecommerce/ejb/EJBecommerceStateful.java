@@ -16,8 +16,6 @@ import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.LockTimeoutException;
-
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
@@ -35,11 +33,11 @@ import mx.edu.ittepic.ecommerce.utils.Message;
 @Remote(EJBecommerceStatefulRemote.class)
 @EJB(name = "ejb/EJBecommerceStateful", beanInterface = EJBecommerceStatefulRemote.class, beanName = "EJBecommerceStateful")
 public class EJBecommerceStateful implements EJBecommerceStatefulRemote {
-
     List<ShoppingProduct> cart;
     EntityManager entity;
     String usernombre;
     int userid;
+    
     @Override
     public String addProduct(String productcode, String productname, int productquantity, double productprice, String image) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -53,7 +51,8 @@ public class EJBecommerceStateful implements EJBecommerceStatefulRemote {
         for(ShoppingProduct p : cart){
             if(productcode.equals(p.getProductcode())){
                 p.setProductquantity(p.getProductquantity()+productquantity);
-        }
+                return new GsonBuilder().create().toJson(cart);
+            }
         }
         cart.add(sp);
         return new GsonBuilder().create().toJson(cart);
@@ -71,7 +70,7 @@ public class EJBecommerceStateful implements EJBecommerceStatefulRemote {
                 }
             }
         }
-        return "";
+        return "caca";
     }
 
     @Override
@@ -102,28 +101,19 @@ public class EJBecommerceStateful implements EJBecommerceStatefulRemote {
         
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        try {
-            System.out.println("Nombre: " + username);
-            System.out.println("Password: " + password);
+        try{
             Query q = entity.createNamedQuery("Users.findByUsername")
-                    .setParameter("username", username);
+                    .setParameter("username", username).setParameter("password", password);
             user = (Users) q.getSingleResult();
-            if (user.getPassword().equals(password)) {
-                msg.setCode(200);
-                msg.setMsg(gson.toJson(user));
-                msg.setDetail("Ok");
-                usernombre = user.getUsername();
-                userid = user.getUserid();
-                cart = new ArrayList<>();
-            } else {
-                msg.setCode(404);
-                msg.setMsg("Error usuario o contraseña incorrecta.");
-                msg.setDetail("Error usuario o contraseña incorrecta.");
-            }
-        } catch (NoResultException e) {
-            msg.setCode(404);
-            msg.setMsg("Error usuario o contraseña incorrecta.");
-            msg.setDetail(e.toString());
+            
+            msg.setCode(200);
+            msg.setMsg(gson.toJson(user));
+            msg.setDetail("Ok");
+            usernombre = user.getUsername();
+            userid = user.getUserid();
+            
+            cart = new ArrayList<>();
+            
         } catch (IllegalArgumentException e) {
             msg.setCode(422);
             msg.setMsg("Error de entidad, el usuario no es una entidad.");
@@ -168,4 +158,5 @@ public class EJBecommerceStateful implements EJBecommerceStatefulRemote {
         return usernombre;
     }
 
+    
 }

@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import mx.edu.ittepic.ecommerce.ejb.EJBecommerceStatefulRemote;
 import mx.edu.ittepic.ecommerce.utils.Message;
-import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  *
@@ -62,16 +61,14 @@ public class LoginUser extends HttpServlet {
         
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String passwordMD5=DigestUtils.md5Hex(password); 
+        
         if(ejb ==null){
             InitialContext ic;
             try{
                 ic = new InitialContext();
                 ejb = (EJBecommerceStatefulRemote) ic.lookup("java:comp/env/ejb/EJBecommerceStateful"); 
                 
-
-                 Message m = new GsonBuilder().create().fromJson(ejb.login(username, passwordMD5), Message.class);
-
+                 Message m = new GsonBuilder().create().fromJson(ejb.login(username, password), Message.class);
                  
                  if(m.getCode()==200){
                      request.getSession().setAttribute("ejbsession", ejb);

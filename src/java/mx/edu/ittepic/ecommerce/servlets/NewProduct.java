@@ -6,13 +6,17 @@
 package mx.edu.ittepic.ecommerce.servlets;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import mx.edu.ittepic.ecommerce.ejb.EJBecommerce;
 
 /**
@@ -20,6 +24,7 @@ import mx.edu.ittepic.ecommerce.ejb.EJBecommerce;
  * @author ernesto
  */
 @WebServlet(name = "NewProduct", urlPatterns = {"/NewProduct"})
+@MultipartConfig
 public class NewProduct extends HttpServlet {
     @EJB
     private EJBecommerce ejb;
@@ -38,8 +43,6 @@ public class NewProduct extends HttpServlet {
         response.setContentType("application/json;charset=UTF-8");
         response.setHeader("Cache-Control", "no-store");
         PrintWriter out = response.getWriter();
-        
-        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -71,6 +74,7 @@ public class NewProduct extends HttpServlet {
         response.setContentType("application/json;charset=UTF-8");
         response.setHeader("Cache-Control", "no-store");
         processRequest(request, response);
+        System.out.println("Estamos en el servlet");
         String productname = request.getParameter("productname");
         String code = request.getParameter("code");
         String brand = request.getParameter("brand");
@@ -82,9 +86,13 @@ public class NewProduct extends HttpServlet {
         String reorderpoint = request.getParameter("reorderpoint");
         String categoryid = request.getParameter("categoryid");
         
+        Part filePart = request.getPart("foto");
+        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+        InputStream fileContent = filePart.getInputStream();
+        
         PrintWriter p = response.getWriter();
         
-        p.print(ejb.newProduct(code, productname, brand, purchprice, stock, salepricemin, salepricemay, reorderpoint, currency, categoryid));
+        p.print(ejb.newProduct(code, productname, brand, purchprice, stock, salepricemin, salepricemay, reorderpoint, currency, categoryid, filePart));
         
         
     }

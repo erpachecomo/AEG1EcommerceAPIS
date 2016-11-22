@@ -6,13 +6,17 @@
 package mx.edu.ittepic.ecommerce.servlets;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import mx.edu.ittepic.ecommerce.ejb.EJBecommerce;
 
 /**
@@ -20,6 +24,7 @@ import mx.edu.ittepic.ecommerce.ejb.EJBecommerce;
  * @author ernesto
  */
 @WebServlet(name = "UpdateProduct", urlPatterns = {"/UpdateProduct"})
+@MultipartConfig
 public class UpdateProduct extends HttpServlet {
 @EJB
 EJBecommerce ejbM;
@@ -68,18 +73,23 @@ EJBecommerce ejbM;
         response.setContentType("application/json;charset=UTF-8");
         
         String productid = request.getParameter("productid");
-        String productname = request.getParameter("productname");
-        String code = request.getParameter("code");
-        String brand = request.getParameter("brand");
-        String purchprice = request.getParameter("purchprice");
-        String stock = request.getParameter("stock");
-        String salepricemin = request.getParameter("salepricemin");
-        String salepricemay = request.getParameter("salepricemay");
-        String currency = request.getParameter("currency");
-        String reorderpoint = request.getParameter("reorderpoint");
-        String categoryid = request.getParameter("categoryid");
+        String productname = request.getParameter("productname2");
+        String code = request.getParameter("code2");
+        String brand = request.getParameter("brand2");
+        String purchprice = request.getParameter("purchprice2");
+        String stock = request.getParameter("stock2");
+        String salepricemin = request.getParameter("salepricemin2");
+        String salepricemay = request.getParameter("salepricemay2");
+        String currency = request.getParameter("currency2");
+        String reorderpoint = request.getParameter("reorderpoint2");
+        String categoryid = request.getParameter("categoryid2");
+        
+        Part filePart = request.getPart("foto2");
+        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+        InputStream fileContent = filePart.getInputStream();
+        
         PrintWriter out = response.getWriter();
-        out.print(ejbM.updateProduct(productid, code, productname, brand, purchprice, stock, salepricemin, salepricemay, reorderpoint, currency, categoryid));
+        out.print(ejbM.updateProduct(productid, code, productname, brand, purchprice, stock, salepricemin, salepricemay, reorderpoint, currency, categoryid, filePart));
     }
 
     /**

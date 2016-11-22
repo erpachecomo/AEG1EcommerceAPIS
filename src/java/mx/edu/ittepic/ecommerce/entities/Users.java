@@ -6,7 +6,9 @@
 package mx.edu.ittepic.ecommerce.entities;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,10 +19,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -47,8 +51,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Users.findByPhoto", query = "SELECT u FROM Users u WHERE u.photo = :photo"),
     @NamedQuery(name = "Users.findByCellphone", query = "SELECT u FROM Users u WHERE u.cellphone = :cellphone"),
     @NamedQuery(name = "Users.findByGender", query = "SELECT u FROM Users u WHERE u.gender = :gender"),
-    @NamedQuery(name = "Users.findByLogin", query = "SELECT u FROM Users u WHERE u.username = :username and u.password = :password"),
-    @NamedQuery(name = "Users.findByApikey", query = "SELECT u FROM Users u WHERE u.apikey = :apikey")})
+    @NamedQuery(name = "Users.findByLogin", query = "SELECT u FROM Users u WHERE u.username = :username and u.password = :password")})
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -129,15 +132,13 @@ public class Users implements Serializable {
     @NotNull
     @Column(name = "gender")
     private Character gender;
-
-    @Size(max = 50)
-    @Column(name = "apikey")
-    private String apikey;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userid", fetch = FetchType.LAZY)
+    private List<Sale> saleList;
     @JoinColumn(name = "companyid", referencedColumnName = "companyid")
-    @ManyToOne(optional = false)//, fetch = FetchType.LAZY)//Agregar a todas las entidades
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)//Agregar a todas las entidades
     private Company companyid;
     @JoinColumn(name = "roleid", referencedColumnName = "roleid")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Role roleid;
 
     public Users() {
@@ -292,12 +293,13 @@ public class Users implements Serializable {
         this.gender = gender;
     }
 
-    public String getApikey() {
-        return apikey;
+    @XmlTransient
+    public List<Sale> getSaleList() {
+        return saleList;
     }
 
-    public void setApikey(String apikey) {
-        this.apikey = apikey;
+    public void setSaleList(List<Sale> saleList) {
+        this.saleList = saleList;
     }
 
     public Company getCompanyid() {
