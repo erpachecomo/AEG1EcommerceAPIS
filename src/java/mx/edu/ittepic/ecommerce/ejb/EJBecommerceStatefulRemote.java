@@ -21,4 +21,7 @@ public interface EJBecommerceStatefulRemote {
     public String login(String username, String password);
     public int getUserid();
     public String getUsername();
+    public boolean isSaleCreated();
+    public void isSaleCreated(boolean flag);
+    
 }

@@ -6,7 +6,7 @@ $(function () {
         async: false, 
         dataType: 'json'
     }).done(function (json1) {
-        console.log("json1:"+json1);
+        
         $.each($.parseJSON(json1.msg), function (i, msg) {
             
             $('<li></li>').attr("id", "li-item" + i).appendTo('#gallery');
@@ -23,10 +23,11 @@ $(function () {
             //$('<span></span>').attr("id", "span-icon" + i).attr("class", "input-group-addon").appendTo('#div-input-group' + i);
             //$('<i></i>').attr("class", "glyphicon glyphicon-plus").appendTo('#span-icon' + i);
             $('<input>').attr("class", "form-control").attr("min", '1').attr("max", "'" + msg.stock + "'").attr("type", "number").attr("id", "quantity" + i).attr("name", "quantity" + i).attr("placeholder", "Cantidad").appendTo('#div-input-group' + i);
-            //console.log("addToCart("+msg.productid+",$('#quantity" + i+"').val())");
+            //console.log("
+            //oCart("+msg.productid+",$('#quantity" + i+"').val())");
             
             $('<button></button>')
-                    .attr("onclick", "addToCart('"+msg.productname+"','"+msg.code+"','"+msg.productid+"','"+msg.salepricemin+"','"+msg.image+"','" +i + "',"+"'button-cart" + i+"')")
+                    .attr("onclick", "addToCart('"+msg.productname+"','"+msg.code+"','"+msg.productid+"','"+msg.salepricemin+"','"+msg.image+"','" +i + "',"+"'button-cart" + i+"','3')")
                     .attr("class", "add-to-cart").attr("id", "button-cart" + i).appendTo('#div-control' + i);
             $('<em></em>', {text: "Add to cart"}).appendTo('#button-cart' + i);
             $('<svg></svg>').appendTo('#button-cart' + i)
@@ -68,7 +69,7 @@ $(function () {
     });*/
 });
 
-function addToCart(productname, code, productid, salepricemin, image, quantity, btn) {
+function addToCart(productname, code, productid, salepricemin, image, quantity, btn,userid) {
     var animating=false;
     var button = $("#"+btn);
     if (!animating) {
@@ -96,18 +97,13 @@ function addToCart(productname, code, productid, salepricemin, image, quantity, 
         });
     }
     var data =
-            {
-                "productname": productname,
-                "code": code,
-                "productid": productid,
-                "quantity": $("#quantity"+quantity).val(),
-                "unitprice": salepricemin,
-                "image": image
-
-            };
+            '{"productname":"'+ productname+'","productcode":"'+ code+'","productid":"'+productid+'","productquantity":"'+ $("#quantity"+quantity).val()+'", "productprice":"'+ salepricemin+'","productimage":"'+ image+'","userid":"'+userid +'"}';
+    console.log(data);
+            
     $.ajax({
-        url: 'AddProduct',
+        url: 'webresources/product/addProductToCart',
         type: 'POST',
+        contentType: 'application/json',
         dataType: 'json',
         data: data
     }).done(function (json) {
@@ -128,11 +124,11 @@ function updateCart(json) {
     $.each(json, function (i, msg) {
         
         var addtoCart = $('.cd-cart-items');
-        var $item = $('<li> <span class="cd-qty">' + msg.productquantity + ' </span>' + msg.productname + ' \n\
-                            <div class="cd-price"> $' + msg.productquantity * msg.productprice + ' </div> \n\
-                            <a href="#0" class="cd-item-remove cd-img-replace" onclick="removeCart("'+msg.productcode+'")" > Remove </a></li>');
+        var $item = $('<li> <span class="cd-qty">' + msg.quantity + ' </span>' + msg.productname + ' \n\
+                            <div class="cd-price"> $' + msg.quantity * msg.productprice + ' </div> \n\
+                            <a class="cd-item-remove cd-img-replace" onclick="removeCart(\''+msg.productcode+'\')" > Remove </a></li>');
         $($item).attr('id', 'li-cart').appendTo('#lista-cart');
-        $total = $total + (msg.productquantity * msg.productprice);
+        $total = $total + (msg.quantity * msg.productprice);
     });
     $total = $('<p>Total<span id="totalSale">'+$total+'</span></p>');
     $($total).appendTo('.cd-cart-total');
@@ -140,37 +136,38 @@ function updateCart(json) {
 }
 
 function removeCart(code){
-    var data = {
+    /*var data = {
         "code": code
     }; 
+        console.log("khastapasanda1!"+code);
     $.ajax({
         url: 'RemoveCart',
         type: 'POST',
         dataType: 'json',
         data: data
     }).done(function (json) {
+        console.log("khastapasanda!"+json);
         updateCart(json);
-    });
+    });*/
 }
 
 function newSale(){
-    var data={
-        "userid": 3,
-        "amount": document.getElementById("totalSale").innerHTML
-    }
+    var data='{"userid":"'+3+'","amount":"'+document.getElementById("totalSale").innerHTML+'"}';
     console.log(data);
     $.ajax({
-        url: 'NewSale',
+        url: 'webresources/product/newSale',
         type: 'POST',
+        contentType: 'application/json',
         dataType: 'json',
         data: data
     }).done(function (data) {
         if(data.code==200){
             $.growl.notice({message:data.msg});
+            
         }else{
-            $.growl.notice({message:data.msg});
+            $.growl.error({message:data.msg});
         }
     }).fail(function(){
-        $.growl.notice({message:"El servidor no está disponible 😞"});
+        $.growl.error({message:"El servidor no está disponible 😞"});
     });
 }

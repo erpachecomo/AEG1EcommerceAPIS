@@ -53,7 +53,7 @@ public class AddProduct extends HttpServlet {
             
             try{
                 ic = new InitialContext();
-                cart = (EJBecommerceStatefulRemote) ic.lookup("java:comp/env/ejb/EJBecommerceStateful");
+                cart = (EJBecommerceStatefulRemote) ic.lookup("java:global/AEEcommerce/ejbs/EJBecommerceStateful");
                 request.getSession().setAttribute("ejbsession", cart);
                 
                 out.printf(cart.addProduct(productCode, productName, productQuantity, productPrice, productImage));
