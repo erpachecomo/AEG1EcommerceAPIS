@@ -6,7 +6,7 @@ $(function () {
         async: false, 
         dataType: 'json'
     }).done(function (json1) {
-        console.log("json1:"+json1);
+        
         $.each($.parseJSON(json1.msg), function (i, msg) {
             $('<li></li>').attr("id", "li-item" + i).appendTo('#gallery');
             $('<div></div>').attr("id", "div-item" + i).attr("class", "cd-single-item").appendTo('#li-item' + i);
@@ -25,7 +25,7 @@ $(function () {
             //console.log("addToCart("+msg.productid+",$('#quantity" + i+"').val())");
             
             $('<button></button>')
-                    .attr("onclick", "addToCart('"+msg.productname+"','"+msg.code+"','"+msg.productid+"','"+msg.salepricemin+"','"+msg.image+"','" +i + "',"+"'button-cart" + i+"')")
+                    .attr("onclick", "addToCart('"+msg.productname+"','"+msg.code+"','"+msg.productid+"','"+msg.salepricemin+"','"+msg.image+"','" +i + "',"+"'button-cart" + i+"','3')")
                     .attr("class", "add-to-cart").attr("id", "button-cart" + i).appendTo('#div-control' + i);
             $('<em></em>', {text: "Add to cart"}).appendTo('#button-cart' + i);
             $('<svg></svg>').appendTo('#button-cart' + i)
@@ -67,7 +67,7 @@ $(function () {
     });*/
 });
 
-function addToCart(productname, code, productid, salepricemin, image, quantity, btn) {
+function addToCart(productname, code, productid, salepricemin, image, quantity, btn,userid) {
     var animating=false;
     var button = $("#"+btn);
     if (!animating) {
@@ -97,15 +97,18 @@ function addToCart(productname, code, productid, salepricemin, image, quantity, 
     var data =
             {
                 "productname": productname,
-                "code": code,
+                "productcode": code,
                 "productid": productid,
-                "quantity": $("#quantity"+quantity).val(),
-                "unitprice": salepricemin,
-                "image": image
+                "productquantity": $("#quantity"+quantity).val(),
+                "productprice": salepricemin,
+                "productimage": image,
+                "userid":userid
 
             };
+    console.log(data);
+            
     $.ajax({
-        url: 'AddProduct',
+        url: 'webresources/product/addProductToCart',
         type: 'POST',
         dataType: 'json',
         data: data
@@ -129,7 +132,7 @@ function updateCart(json) {
         var addtoCart = $('.cd-cart-items');
         var $item = $('<li> <span class="cd-qty">' + msg.productquantity + ' </span>' + msg.productname + ' \n\
                             <div class="cd-price"> $' + msg.productquantity * msg.productprice + ' </div> \n\
-                            <a href="#0" class="cd-item-remove cd-img-replace" onclick="removeCart("'+msg.productcode+'")" > Remove </a></li>');
+                            <a class="cd-item-remove cd-img-replace" onclick="removeCart(\''+msg.productcode+'\')" > Remove </a></li>');
         $($item).attr('id', 'li-cart').appendTo('#lista-cart');
         $total = $total + (msg.productquantity * msg.productprice);
     });
@@ -142,12 +145,14 @@ function removeCart(code){
     var data = {
         "code": code
     }; 
+        console.log("khastapasanda1!"+code);
     $.ajax({
         url: 'RemoveCart',
         type: 'POST',
         dataType: 'json',
         data: data
     }).done(function (json) {
+        console.log("khastapasanda!"+json);
         updateCart(json);
     });
 }
@@ -157,7 +162,7 @@ function newSale(){
         "userid": 3,
         "amount": document.getElementById("totalSale").innerHTML
     }
-    console.log(data);
+    //console.log(data);
     $.ajax({
         url: 'NewSale',
         type: 'POST',

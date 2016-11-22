@@ -8,10 +8,12 @@ package mx.edu.ittepic.ecommerce.ejb;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.LockTimeoutException;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.PessimisticLockException;
@@ -24,8 +26,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import mx.edu.ittepic.ecommerce.entities.Login;
 import mx.edu.ittepic.ecommerce.entities.Product;
+import mx.edu.ittepic.ecommerce.entities.Productcart;
+
+import mx.edu.ittepic.ecommerce.entities.ShoppingProduct;
 import mx.edu.ittepic.ecommerce.entities.Role;
 import mx.edu.ittepic.ecommerce.utils.Message;
 
@@ -46,13 +52,22 @@ public class ProductServices {
     @Path("/list")
     @Produces({MediaType.TEXT_PLAIN})
     public String getRoles() {
-        List<Role> role = new ArrayList<>();
-        Query q = entity.createNamedQuery("Role.findAll");
-        role = q.getResultList();
+        List<Role> listRoles;
+        Message msg = new Message();
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
 
-        return gson.toJson(role);
+        Query q = entity.createNamedQuery("Role.findAll");
+        listRoles = q.getResultList();
+        for (int i = 0; i < listRoles.size(); i++) {
+            listRoles.get(i).setUsersList(null);
+        }
+
+        msg.setCode(200);
+        msg.setMsg(gson.toJson(listRoles));
+        msg.setDetail("OK");//595 ms 717 71ms
+
+        return gson.toJson(msg);
     }
 
     @GET
@@ -118,5 +133,34 @@ public class ProductServices {
         m.setMsg("Correcto recibido");
         m.setDetail("OK");
         return m;
+    }
+
+    @POST
+    @Path("/addProductToCart")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Productcart addProductToCart(ShoppingProduct param) {
+
+        Productcart product;
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        
+        try {
+            Query q = entity.createNamedQuery("Productcart.findByUserid").setParameter("userid", param.getUserid());
+            product = (Productcart)q.getSingleResult();
+            product.setQuantity(product.getQuantity()+Integer.parseInt(param.getProductquantity()));
+
+        } catch (NoResultException e) {
+            product = new Productcart();
+            product.setProductid(Integer.parseInt(param.getProductid()));
+            product.setProductimage(param.getProductimage());
+            product.setProductname(param.getProductname());
+            product.setProductprice(Double.parseDouble(param.getProductprice()));
+            product.setQuantity(Integer.parseInt(param.getProductquantity()));
+            product.setUserid(Integer.parseInt(param.getUserid()));
+            product.setProductcode(param.getProductcode());
+
+        }
+        return product;
     }
 }

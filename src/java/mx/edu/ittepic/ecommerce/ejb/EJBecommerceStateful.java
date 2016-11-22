@@ -33,17 +33,18 @@ import mx.edu.ittepic.ecommerce.utils.Message;
  */
 @Stateful
 @Remote(EJBecommerceStatefulRemote.class)
-@EJB(name = "ejb/EJBecommerceStateful", beanInterface = EJBecommerceStatefulRemote.class, beanName = "EJBecommerceStateful")
+@EJB(name = "java:global/AEEcommerce/ejbs/EJBecommerceStateful", beanInterface = EJBecommerceStatefulRemote.class)//, beanName = "EJBecommerceStateful")
 public class EJBecommerceStateful implements EJBecommerceStatefulRemote {
 
     List<ShoppingProduct> cart;
     EntityManager entity;
     String usernombre;
+    boolean saleIsCreated;
     int userid;
     @Override
     public String addProduct(String productcode, String productname, int productquantity, double productprice, String image) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        ShoppingProduct sp = new ShoppingProduct();
+       /* ShoppingProduct sp = new ShoppingProduct();
         sp.setProductcode(productcode);
         sp.setProductname(productname);
         sp.setProductquantity(productquantity);
@@ -56,7 +57,8 @@ public class EJBecommerceStateful implements EJBecommerceStatefulRemote {
         }
         }
         cart.add(sp);
-        return new GsonBuilder().create().toJson(cart);
+        return new GsonBuilder().create().toJson(cart);*/
+       return "";
     }
 
     @Override
@@ -77,6 +79,7 @@ public class EJBecommerceStateful implements EJBecommerceStatefulRemote {
     @Override
     @Remove
     public void remove() {
+        cart =null;
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -166,6 +169,16 @@ public class EJBecommerceStateful implements EJBecommerceStatefulRemote {
     public String getUsername() {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         return usernombre;
+    }
+
+    @Override
+    public boolean isSaleCreated() {
+        return saleIsCreated;
+    }
+
+    @Override
+    public void isSaleCreated(boolean flag) {
+        saleIsCreated=flag;
     }
 
 }
