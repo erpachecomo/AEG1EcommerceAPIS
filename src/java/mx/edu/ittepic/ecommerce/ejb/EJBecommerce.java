@@ -7,8 +7,17 @@ package mx.edu.ittepic.ecommerce.ejb;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
@@ -22,7 +31,7 @@ import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
 import javax.persistence.QueryTimeoutException;
 import javax.persistence.TransactionRequiredException;
-import javax.ws.rs.HEAD;
+import javax.servlet.http.Part;
 import mx.edu.ittepic.ecommerce.entities.Category;
 import mx.edu.ittepic.ecommerce.entities.Company;
 import mx.edu.ittepic.ecommerce.entities.Product;
@@ -243,12 +252,13 @@ public class EJBecommerce {
 
     }
 
-    public String newProduct(String code, String productname, String brand, String purchprice, String stock, String salepricemin, String salepricemay, String reorderpoint, String currency, String categoryid) {
+    public String newProduct(String code, String productname, String brand, String purchprice, String stock, String salepricemin, String salepricemay, String reorderpoint, String currency, String categoryid, Part fileContent) {
         Message m = new Message();
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         Product p = new Product();
         Category c;
+        String nombre;
 
         try {
             c = entity.find(Category.class, Integer.parseInt(categoryid));
@@ -262,13 +272,19 @@ public class EJBecommerce {
             p.setSalepricemay(Double.parseDouble(salepricemay));
             p.setSalepricemin(Double.parseDouble(salepricemin));
             p.setStock(Integer.parseInt(stock));
-
+            p.setImage("g");
+            
             entity.persist(p);
             entity.flush();
-
+            
+            nombre = p.getProductid().toString();
+            System.out.println("+++++++++++++++++0"+nombre);
+            p.setImage(guardarImagen(fileContent, nombre));
             m.setCode(200);
             m.setMsg("El producto se creó correctamente");
             m.setDetail(p.getProductid() + "");
+            entity.merge(p);     
+            
         } catch (NumberFormatException e) {
             m.setCode(406);
             m.setMsg("Error de tipo de dato '" + productname + "'.");
@@ -291,6 +307,32 @@ public class EJBecommerce {
             m.setDetail(e.toString());
         }
         return gson.toJson(m);
+    }
+    
+        
+    public String guardarImagen(Part part, String nombre){
+        String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+        
+        String ext = ".png";
+        if(fileName.endsWith(".jpg")){
+            ext = ".jpg";
+        }
+        try{
+            InputStream input = part.getInputStream();
+            Path file = Files.createTempFile(Paths.get("C:\\Users\\Cesar\\OneDrive\\Documents\\NetBeansProjects\\AEEcommerce\\web\\img"), "sd-", ext);
+            Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
+            
+            File f1 = file.toFile();
+            File f2 = new File("C:\\Users\\Cesar\\OneDrive\\Documents\\NetBeansProjects\\AEEcommerce\\web\\img\\"+nombre+ext);
+            f1.renameTo(f2);
+            System.out.println("------------------------------Guardo");
+            
+            return "C:\\Users\\Cesar\\OneDrive\\Documents\\NetBeansProjects\\AEEcommerce\\web\\img\\"+nombre+ext;
+        } catch (IOException ex) {
+             System.out.println("------------------------------noGuardo");
+            Logger.getLogger(EJBecommerce.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
     }
 
     public String getReorderProducts() {
@@ -448,6 +490,7 @@ public class EJBecommerce {
     public String deleteProduct(String productid) {
         Message m = new Message();
         Product r;
+        String i;
 
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
@@ -455,13 +498,18 @@ public class EJBecommerce {
 
             Query q = entity.createNamedQuery("Product.findByProductid").setParameter("productid", Integer.parseInt(productid));
             r = (Product) q.getSingleResult();
-
+            i = r.getImage();
             entity.remove(r);
             entity.flush();
+            
+            
+        
 
             m.setCode(200);
             m.setMsg("El product fue eliminado correctamente");
             m.setDetail("OK");
+            eliminarImagen(i);
+            
         } catch (NoResultException e) {
             m.setCode(404);
             m.setMsg("El producto no fue encontrado.");
@@ -486,14 +534,17 @@ public class EJBecommerce {
         return gson.toJson(m);
     }
 
-    public String updateProduct(String productid, String code, String productname, String brand, String purchprice,
-            String stock, String salepricemin, String salepricemay, String reorderpoint, String currency, String categoryid) {
+    public String updateProduct(String productid, String code, String productname, String brand, String purchprice, String stock, String salepricemin, String salepricemay, String reorderpoint, String currency, String categoryid, Part fileContent) {
         Message m = new Message();
         Product r = new Product();
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-
-        Query q = entity.createNativeQuery("UPDATE product SET productname = '" + productname + "',"
+        String i;
+        Query q = entity.createNamedQuery("Product.findByProductid").setParameter("productid", Integer.parseInt(productid));
+            r = (Product) q.getSingleResult();
+        i=r.getImage();
+        eliminarImagen(i);
+         q = entity.createNativeQuery("UPDATE product SET productname = '" + productname + "',"
                 + "code = '" + code + "'"
                 + ",brand = '" + brand + "'"
                 + ",purchprice = " + purchprice + ""
@@ -503,6 +554,7 @@ public class EJBecommerce {
                 + ",reorderpoint = " + reorderpoint + ""
                 + ",currency = '" + currency + "'"
                 + ",categoryid = " + categoryid + ""
+                + ",image = '" + guardarImagen(fileContent, productid) +"'"
                 + " WHERE productid = " + productid);
 
         try {
@@ -535,6 +587,12 @@ public class EJBecommerce {
         }
         return gson.toJson(m);
 
+    }
+    
+    private void eliminarImagen(String img){
+        System.out.println(img);
+        File f = new File(img);
+        f.delete();
     }
 
     public String login(String user, String password) {

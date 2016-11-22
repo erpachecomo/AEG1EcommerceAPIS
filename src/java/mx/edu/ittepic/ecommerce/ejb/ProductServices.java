@@ -29,6 +29,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import mx.edu.ittepic.ecommerce.entities.ApiKey;
 import mx.edu.ittepic.ecommerce.entities.Login;
 import mx.edu.ittepic.ecommerce.entities.Product;
 import mx.edu.ittepic.ecommerce.entities.Role;
@@ -127,36 +128,33 @@ public class ProductServices {
         m.setDetail("OK");
         return m;
     }
+
     @GET
     @Path("/login")
     @Consumes({MediaType.TEXT_PLAIN})
     @Produces({MediaType.TEXT_PLAIN})
-    public String login(@QueryParam("username") String user,@QueryParam("pass") String pass){      
-                
+    public String login(@QueryParam("username") String user, @QueryParam("pass") String pass) {
+
         Message m = new Message();
         GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();         
+        Gson gson = builder.create();
         Users user1;
-        String passmd5 = DigestUtils.md5Hex(pass+"");
-        try{
-        
-            //u.setApikey(DigestUtils.md5Hex(u.getUserid()+""));
+        String passmd5 = DigestUtils.md5Hex(pass + "");
+        try {
 
+            //u.setApikey(DigestUtils.md5Hex(u.getUserid()+""));
             Query q = entity.createNamedQuery("Users.findByUsername").setParameter("username", user);
 
             user1 = (Users) q.getSingleResult();
             user1.getCompanyid().setUsersList(null);
             user1.getRoleid().setUsersList(null);
 
-    //      user.setSaleList(null);
-
-
-
-            if(user1.getPassword().equals(passmd5)){
+            //      user.setSaleList(null);
+            if (user1.getPassword().equals(passmd5)) {
                 m.setCode(200);
                 m.setMsg(gson.toJson(user1));
                 m.setDetail("OK");
-            }else{
+            } else {
                 m.setCode(400);
                 m.setMsg("NOT MATCHING");
                 m.setDetail("OK");
@@ -181,37 +179,37 @@ public class ProductServices {
             m.setCode(404);
             m.setMsg("El sale introducido no existe, no se puede actualizar.");
             m.setDetail(e.toString());
-        }catch(NoResultException e){
+        } catch (NoResultException e) {
             m.setCode(404);
             m.setMsg("El usuario introducido no existe, no se puede actualizar.");
             m.setDetail(e.toString());
         }
-        
+
         return gson.toJson(m);
-        
+
     }
-    
+
     @PUT
     @Path("/newPassword")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Message newPassword(UpdatePassword up){
+    public Message newPassword(UpdatePassword up) {
         Message m = new Message();
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        try{
+        try {
             Users user;
-            Query q = entity.createNamedQuery("Users.findByApikey").setParameter("apikey",up.getApikey());
+            Query q = entity.createNamedQuery("Users.findByApikey").setParameter("apikey", up.getApikey());
             user = (Users) q.getSingleResult();
 
-            if(user.getUserid() != (Integer.parseInt(up.getUserid()))){
+            if (user.getUserid() != (Integer.parseInt(up.getUserid()))) {
                 m.setCode(400);
                 m.setMsg("El id no es valido");
                 m.setDetail("OK");
-            } else{
+            } else {
                 user.setPassword(DigestUtils.md5Hex(up.getPassword()));
                 entity.merge(user);
-                m.setCode(200); 
+                m.setCode(200);
                 m.setMsg("Se modifico correctamente");
                 m.setDetail("OK");
 
@@ -236,12 +234,61 @@ public class ProductServices {
             m.setCode(404);
             m.setMsg("El valor introducido no existe, no se puede actualizar.");
             m.setDetail(e.toString());
-        } catch(NoResultException e){
+        } catch (NoResultException e) {
             m.setCode(404);
             m.setMsg("El usuario introducido no existe, no se puede actualizar.");
             m.setDetail(e.toString());
         }
         return m;
-    
+
+    }
+
+    @POST
+    @Path("/checkapikey")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public String checkapikey(ApiKey apikey1) {
+        Message m = new Message();
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        String apikey = apikey1.getApikey();
+        try {
+            System.out.println("Apikey!!!!! " + apikey);
+            Query q = entity.createNamedQuery("Users.findByApikey").setParameter("apikey", apikey);
+
+            Users user1 = (Users) q.getSingleResult();
+            user1.getCompanyid().setUsersList(null);
+            user1.getRoleid().setUsersList(null);
+            m.setCode(200);
+            m.setMsg(gson.toJson(user1));
+            m.setDetail("OK");
+
+        } catch (NumberFormatException e) {
+            m.setCode(406);
+            m.setMsg("Error de tipo de dato.");
+            m.setDetail(e.toString());
+        } catch (EntityExistsException e) {
+            m.setCode(400);
+            m.setMsg("El rol que intentas ingresar ya existe.");
+            m.setDetail(e.toString());
+        } catch (IllegalArgumentException e) {
+            m.setCode(422);
+            m.setMsg("Error de entidad, el sale no es una entidad o ha sido removido.");
+            m.setDetail(e.toString());
+        } catch (TransactionRequiredException e) {
+            m.setCode(509);
+            m.setMsg("La transacción no pudo ser completada. Espera un momento y vuelve a intentar.");
+            m.setDetail(e.toString());
+        } catch (EntityNotFoundException e) {
+            m.setCode(404);
+            m.setMsg("El sale introducido no existe, no se puede actualizar.");
+            m.setDetail(e.toString());
+        } catch (NoResultException e) {
+            m.setCode(404);
+            m.setMsg("El usuario introducido no existe, no se puede actualizar.");
+            m.setDetail(e.toString());
+        }
+
+        return gson.toJson(m);
     }
 }

@@ -8,12 +8,13 @@ $(function () {
     }).done(function (json1) {
         console.log("json1:"+json1);
         $.each($.parseJSON(json1.msg), function (i, msg) {
+            
             $('<li></li>').attr("id", "li-item" + i).appendTo('#gallery');
             $('<div></div>').attr("id", "div-item" + i).attr("class", "cd-single-item").appendTo('#li-item' + i);
             $('<a></a>').attr("id", "a-item" + i).appendTo('#div-item' + i);
             $('<ul></ul>').attr("class", "cd-slider-wrapper").attr("id", "ul-item" + i).appendTo('#a-item' + i);
             $('<li></li>').attr("class", "selected").attr("id", "li-img-item" + i).appendTo('#ul-item' + i);
-            $('<img>').attr("src", msg.image.split("/")[0] + "/" + msg.image.split("/")[1])
+            $('<img>').attr("src", "img/" + msg.image.split("\\")[9])
                     .attr("alt", msg.productname).appendTo('#li-img-item' + i);
 
             $('<div></div>').attr("id", "div-control" + i).attr("class", "cd-customization row").appendTo('#div-item' + i);

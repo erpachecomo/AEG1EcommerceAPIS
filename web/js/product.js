@@ -1,12 +1,11 @@
 $(function () {
-    
     $('#tbProducts').DataTable({
         responsive: true,
         language: {
             url: "//cdn.datatables.net/plug-ins/1.10.12/i18n/Spanish.json"
         },
         ajax: {
-            url: "webresources/product/listProducts",
+            url: "GetProducts", 
             dataSrc: function (json) {
                 return $.parseJSON(json["msg"]);
             }
@@ -101,7 +100,6 @@ $(function () {
             });
 
     });
-
     $('#frmProduct').validate({
         rules: {
             code: {
@@ -115,7 +113,6 @@ $(function () {
                 required: true
             },
             brand: {
-                
                 maxlength: 20,
                 required: true
             },
@@ -139,8 +136,11 @@ $(function () {
             },
             salepricemay: {
                 required: true
+            },
+            foto:{
+                required: true,
+                accept: "jpg,png,jpeg"
             }
-
         },
         messages: {
             code: {
@@ -179,9 +179,11 @@ $(function () {
             },
             salepricemin: {
                 required: "Introduce un precio de menudeo"
+            },
+            foto:{
+                required: "Introduce una imagen",
+                accept: "La imagen debe ser tipo PNG o JPG"
             }
-
-
         },
         highlight: function (element) {
             $(element).closest('.form-group').addClass('has-error');
@@ -240,6 +242,10 @@ $(function () {
             },
             salepricemay2: {
                 required: true
+            },
+            foto2:{
+                required: true,
+                accept: "jpg,png,jpeg"
             }
 
         },
@@ -279,6 +285,10 @@ $(function () {
             },
             salepricemin2: {
                 required: "Introduce un precio de menudeo"
+            },
+            foto2:{
+                required: "Introduce una imagen",
+                accept: "La imagen debe ser tipo PNG o JPG"
             }
 
         },
@@ -318,8 +328,8 @@ function updateProduct() {
                 closeOnCancel: false
             }, function (isConfirm) {
         if (isConfirm) {
-
-            var para = {
+            
+            /*var para = {
                 "productid": $('#productid').val(),
                 "code": $('#code2').val(),
                 "productname": $('#productname2').val(),
@@ -330,8 +340,10 @@ function updateProduct() {
                 "categoryid": $('#categoryid2').val(),
                 "purchprice": $('#purchprice2').val(),
                 "salepricemay": $('#salepricemay2').val(),
-                "salepricemin": $('#salepricemin2').val()
-            };
+                "salepricemin": $('#salepricemin2').val(),
+                "foto":$("#foto2").val()
+            };*/
+            var data = new FormData($('#frmEditProduct')[0]);
             ///Comienza a Borrar    
             $.ajax({
                 url: "UpdateProduct",
@@ -339,7 +351,9 @@ function updateProduct() {
                 /*Manda todo el formulario
                  * como mandar parametros por separado en data:
                  */
-                data: para
+                data: data,
+                contentType:false,
+                processData:false
 
             }).done(
                     function (data) {
@@ -365,14 +379,16 @@ function updateProduct() {
 }
 
 function newProduct() {
-
-
+    var data = new FormData($('#frmProduct')[0]);
+    console.log(data);
     $.ajax(
             {
                 url: "NewProduct",
                 type: "post",
-                data: {
-                    "code": $('#code').val(),
+                data: data,
+                contentType:false,
+                processData:false/*{
+                    /*"code": $('#code').val(),
                     "productname": $('#productname').val(),
                     "brand": $('#brand').val(),
                     "stock": $('#stock').val(),
@@ -381,8 +397,10 @@ function newProduct() {
                     "categoryid": $('#categoryid').val(),
                     "purchprice": $('#purchprice').val(),
                     "salepricemay": $('#salepricemay').val(),
-                    "salepricemin": $('#salepricemin').val()
-                }
+                    "salepricemin": $('#salepricemin').val(),
+                    "photo": $('#foto').val()
+                    
+                }*/
             }
     ).done(
             function (data) {
