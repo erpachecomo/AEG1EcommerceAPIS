@@ -151,23 +151,22 @@ function removeCart(code){
 }
 
 function newSale(){
-    var data={
-        "userid": 3,
-        "amount": document.getElementById("totalSale").innerHTML
-    }
-    //console.log(data);
+    var data='{"userid":"'+3+'","amount":"'+document.getElementById("totalSale").innerHTML+'"}';
+    console.log(data);
     $.ajax({
-        url: 'NewSale',
+        url: 'webresources/product/newSale',
         type: 'POST',
+        contentType: 'application/json',
         dataType: 'json',
         data: data
     }).done(function (data) {
         if(data.code==200){
             $.growl.notice({message:data.msg});
+            
         }else{
-            $.growl.notice({message:data.msg});
+            $.growl.error({message:data.msg});
         }
     }).fail(function(){
-        $.growl.notice({message:"El servidor no está disponible 😞"});
+        $.growl.error({message:"El servidor no está disponible 😞"});
     });
 }
